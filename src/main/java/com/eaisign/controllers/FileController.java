@@ -1,6 +1,7 @@
 package com.eaisign.controllers;
 
 import java.util.List;
+
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +44,12 @@ public class FileController {
 	  }
 	  @GetMapping("/files")
 	  public ResponseEntity<List<ResponseFile>> getListFiles() {
+	
 	    List<ResponseFile> files = storageService.getAllFiles().map(dbFile -> {
 	      String fileDownloadUri = ServletUriComponentsBuilder
 	          .fromCurrentContextPath()
 	          .path("api/auth/files/")
-	          .path(dbFile.getId())
+	          .path(Integer.toString(dbFile.getId()))
 	          .toUriString();
 	      return new ResponseFile(
 	          dbFile.getName(),
@@ -58,7 +60,7 @@ public class FileController {
 	    return ResponseEntity.status(HttpStatus.OK).body(files);
 	  }
 	  @GetMapping("/files/{id}")
-	  public ResponseEntity<byte[]> getFile(@PathVariable String id) {
+	  public ResponseEntity<byte[]> getFile(@PathVariable int id) {
 	    FileDB fileDB = storageService.getFile(id);
 	    return ResponseEntity.ok()
 	        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileDB.getName() + "\"")

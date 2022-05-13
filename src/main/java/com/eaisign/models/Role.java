@@ -3,11 +3,13 @@ package com.eaisign.models;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "aa_sg_roles")
 public class Role {
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+	@Id
+	@Column(name = "ID")
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator = "id_Sequence")
+	@SequenceGenerator(name = "id_Sequence", sequenceName = "ID_SEQ")
+  private Integer  id;
 
   @Enumerated(EnumType.STRING)
   @Column(length = 20)

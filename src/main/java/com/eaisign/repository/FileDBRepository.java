@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.eaisign.models.FileDB;
 
 @Repository
-public interface FileDBRepository extends JpaRepository<FileDB, String> {
+public interface FileDBRepository extends JpaRepository<FileDB, Integer> {
 
 }
