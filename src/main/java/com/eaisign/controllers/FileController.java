@@ -40,7 +40,7 @@ public class FileController {
 		
 		@PostMapping("/savefile/{path}")
 		public ResponseEntity<ResponseMessage> saveFile(@RequestParam("file") MultipartFile file,@PathVariable("path") String path){
-			String message="";
+			/*String message="";
 			try {
 			      fileStorageService.save(file,path);
 			      message = "Uploaded the file successfully: " + file.getOriginalFilename();
@@ -48,7 +48,8 @@ public class FileController {
 			    } catch (Exception e) {
 			      message = "Could not upload the file: " + file.getOriginalFilename() + "!";
 			      return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
-			    }
+			    }*/
+			return null;
 			
 		}
 }

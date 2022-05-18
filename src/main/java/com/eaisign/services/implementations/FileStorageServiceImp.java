@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,16 @@ public class FileStorageServiceImp implements FileStorageService {
 	}
 
 	@Override
-	public Envoloppe save(List<Document> documents, String nom, String status) {
+	public Envoloppe save(List<MultipartFile> files, String nom, String status,Long id) {
+	/*	files.stream().map(file->{
+			this.save(file, id);
+		}).collect(Collectors.toList());*/
+		List<Document> documents=	files.stream().map(file->{
+			Document doc=new Document();
+			doc.setNom(file.getOriginalFilename());
+			return doc;
+		
+		}).collect(Collectors.toList());
 		Envoloppe envoloppe = new Envoloppe(nom, status, documents);
 		return envoloppeRepo.save(envoloppe);
 	}
@@ -77,21 +87,21 @@ public class FileStorageServiceImp implements FileStorageService {
 	}
 
 	@Override
-	public void save(MultipartFile file, String root) {
+	public void save(MultipartFile file, Long id) {
 
-		root = ROOT + root;
+		/*root = ROOT + root;
 		Path path = Paths.get(root);
 		try {
 			Files.copy(file.getInputStream(), path.resolve(file.getOriginalFilename()));
 		} catch (Exception e) {
 			throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
-		}
+		}*/
 
 	}
 
 	@Override
-	public Resource load(String filename,String root) {
-		try {
+	public Resource load(String filename,Long id) {
+		/*try {
 			root = ROOT + root;
 			Path path = Paths.get(root);
 			Path file = path.resolve(filename);
@@ -103,7 +113,8 @@ public class FileStorageServiceImp implements FileStorageService {
 			}
 		} catch (MalformedURLException e) {
 			throw new RuntimeException("Error: " + e.getMessage());
-		}
+		}*/
+		return null;
 	}
 
 

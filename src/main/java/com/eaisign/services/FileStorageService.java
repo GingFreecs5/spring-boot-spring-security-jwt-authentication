@@ -22,14 +22,14 @@ public interface FileStorageService {
 	//Envoloppes
 	
 	String CreateDirectory(String nom,Long id);
-	Envoloppe save(List<Document> documents,String nom,String status);
+	Envoloppe save(List<MultipartFile> files,String nom,String status,Long id);
 	 List<Envoloppe> getAllEnvoloppes(Long id) throws UserNotFoundException;
 	 List<Envoloppe> getEnvoloppesByStatus(Long id,String status) throws UserNotFoundException;
 	 
 	//Documents
 	 
-	  void save(MultipartFile file,String root) ;
-	  Resource load(String filename,String root);
+	  void save(MultipartFile file,Long id ) ;
+	  Resource load(String filename,Long id);
 	  Stream<Path> loadAll();
 	 
 }
