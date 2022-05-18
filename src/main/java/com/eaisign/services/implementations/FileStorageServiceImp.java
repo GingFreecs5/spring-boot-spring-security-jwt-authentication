@@ -46,16 +46,16 @@ public class FileStorageServiceImp implements FileStorageService {
 	}
 
 	@Override
-	public Envoloppe save(List<MultipartFile> files, String nom, String status,Long id) {
-	/*	files.stream().map(file->{
+	public Envoloppe save(List<MultipartFile> files, String nom, String status, Long id) {
+		
+		List<Document> documents = files.stream().map(file -> {
 			this.save(file, id);
-		}).collect(Collectors.toList());*/
-		List<Document> documents=	files.stream().map(file->{
-			Document doc=new Document();
+			Document doc = new Document();
 			doc.setNom(file.getOriginalFilename());
 			return doc;
-		
+
 		}).collect(Collectors.toList());
+
 		Envoloppe envoloppe = new Envoloppe(nom, status, documents);
 		return envoloppeRepo.save(envoloppe);
 	}
@@ -89,43 +89,35 @@ public class FileStorageServiceImp implements FileStorageService {
 	@Override
 	public void save(MultipartFile file, Long id) {
 
-		/*root = ROOT + root;
-		Path path = Paths.get(root);
-		try {
-			Files.copy(file.getInputStream(), path.resolve(file.getOriginalFilename()));
-		} catch (Exception e) {
-			throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
-		}*/
+		/*
+		 * root = ROOT + root; Path path = Paths.get(root); try {
+		 * Files.copy(file.getInputStream(), path.resolve(file.getOriginalFilename()));
+		 * } catch (Exception e) { throw new
+		 * RuntimeException("Could not store the file. Error: " + e.getMessage()); }
+		 */
 
 	}
 
 	@Override
-	public Resource load(String filename,Long id) {
-		/*try {
-			root = ROOT + root;
-			Path path = Paths.get(root);
-			Path file = path.resolve(filename);
-			Resource resource = new UrlResource(file.toUri());
-			if (resource.exists() || resource.isReadable()) {
-				return resource;
-			} else {
-				throw new RuntimeException("Could not read the file!");
-			}
-		} catch (MalformedURLException e) {
-			throw new RuntimeException("Error: " + e.getMessage());
-		}*/
+	public Resource load(String filename, Long id) {
+		/*
+		 * try { root = ROOT + root; Path path = Paths.get(root); Path file =
+		 * path.resolve(filename); Resource resource = new UrlResource(file.toUri()); if
+		 * (resource.exists() || resource.isReadable()) { return resource; } else {
+		 * throw new RuntimeException("Could not read the file!"); } } catch
+		 * (MalformedURLException e) { throw new RuntimeException("Error: " +
+		 * e.getMessage()); }
+		 */
 		return null;
 	}
 
-
-
 	@Override
 	public Stream<Path> loadAll() {
-		/*try {
-			return Files.walk(this.root, 1).filter(path -> !path.equals(this.root)).map(this.root::relativize);
-		} catch (IOException e) {
-			throw new RuntimeException("Could not load the files!");
-		}*/
+		/*
+		 * try { return Files.walk(this.root, 1).filter(path ->
+		 * !path.equals(this.root)).map(this.root::relativize); } catch (IOException e)
+		 * { throw new RuntimeException("Could not load the files!"); }
+		 */
 		return null;
 	}
 
