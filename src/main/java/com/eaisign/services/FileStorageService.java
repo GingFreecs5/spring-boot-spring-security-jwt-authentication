@@ -1,33 +1,35 @@
 package com.eaisign.services;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Base64;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.eaisign.models.FileDB;
-import com.eaisign.repository.FileDBRepository;
+import com.eaisign.exceptions.UserNotFoundException;
+import com.eaisign.models.Document;
+import com.eaisign.models.Envoloppe;
 
 @Service
-public class FileStorageService {
-	 @Autowired
-	 private FileDBRepository fileDBRepository;
-	 public FileDB store(MultipartFile file) throws IOException {
-		 String fileName=StringUtils.cleanPath(file.getOriginalFilename());
-		 String b64=Base64.getEncoder().encodeToString(file.getBytes());
-		 FileDB FileDB=new FileDB(fileName,file.getContentType(),file.getBytes(),b64);
-		 System.out.println(b64);
-		 return fileDBRepository.save(FileDB);
-	 }
-	 public FileDB getFile(int id) {
-		 return fileDBRepository.findById(id).get();
-	 }
-	 public Stream<FileDB> getAllFiles(){
-		 return fileDBRepository.findAll().stream();
-	 }
+public interface FileStorageService {
+	
+	//Envoloppes
+	
+	String CreateDirectory(String nom,Long id);
+	Envoloppe save(List<Document> documents,String nom,String status);
+	 List<Envoloppe> getAllEnvoloppes(Long id) throws UserNotFoundException;
+	 List<Envoloppe> getEnvoloppesByStatus(Long id,String status) throws UserNotFoundException;
+	 
+	//Documents
+	 
+	  void save(MultipartFile file,String root) ;
+	  Resource load(String filename,String root);
+	  Stream<Path> loadAll();
 	 
 }

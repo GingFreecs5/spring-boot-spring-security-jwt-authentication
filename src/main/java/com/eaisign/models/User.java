@@ -1,6 +1,7 @@
 package com.eaisign.models;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.*;
@@ -19,13 +20,14 @@ public class User {
 
 	@NotBlank
 	@Size(max = 20)
+	@Column(name = "NOM")
 	private String username;
 	@Size(max = 20)
 	private String prenom;
 	@Size(max = 20)
-	private String num_telephone;
+	private String numTelephone;
 	@Size(max = 20)
-	private String piece_justicatif;
+	private String pieceJusticatif;
 	@NotBlank
 	@Size(max = 50)
 	@Email
@@ -35,18 +37,45 @@ public class User {
 	private String password;
 
 	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@JoinTable(name = "aa_sg_user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
-
+	
+	@OneToMany(mappedBy = "user")
+	private  List<Envoloppe> envoloppes;
+	
 	public User() {
+	}
+
+	public String getNumTelephone() {
+		return numTelephone;
+	}
+
+	public void setNumTelephone(String numTelephone) {
+		this.numTelephone = numTelephone;
+	}
+
+	public String getPieceJusticatif() {
+		return pieceJusticatif;
+	}
+
+	public void setPieceJusticatif(String pieceJusticatif) {
+		this.pieceJusticatif = pieceJusticatif;
+	}
+
+	public  List<Envoloppe> getEnvoloppes() {
+		return envoloppes;
+	}
+
+	public void setEnvoloppes( List<Envoloppe> envoloppes) {
+		this.envoloppes = envoloppes;
 	}
 
 	public User(String username, String prenom, String email, String piece_justicatif, String num_telephone) {
 		this.username = username;
 		this.email = email;
 		this.prenom = prenom;
-		this.piece_justicatif = piece_justicatif;
-		this.num_telephone = num_telephone;
+		this.pieceJusticatif = piece_justicatif;
+		this.numTelephone = num_telephone;
 	}
 
 	public User(String username, String prenom, String email, String piece_justicatif, String num_telephone,
@@ -54,8 +83,8 @@ public class User {
 		this.username = username;
 		this.email = email;
 		this.prenom = prenom;
-		this.piece_justicatif = piece_justicatif;
-		this.num_telephone = num_telephone;
+		this.pieceJusticatif = piece_justicatif;
+		this.numTelephone = num_telephone;
 		this.password = password;
 	}
 
@@ -107,19 +136,5 @@ public class User {
 		this.prenom = prenom;
 	}
 
-	public String getNum_telephone() {
-		return num_telephone;
-	}
 
-	public void setNum_telephone(String num_telephone) {
-		this.num_telephone = num_telephone;
-	}
-
-	public String getPiece_justicatif() {
-		return piece_justicatif;
-	}
-
-	public void setPiece_justicatif(String piece_justicatif) {
-		this.piece_justicatif = piece_justicatif;
-	}
 }
