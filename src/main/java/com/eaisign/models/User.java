@@ -40,8 +40,7 @@ public class User {
 	@JoinTable(name = "aa_sg_user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
 	
-	@OneToMany(mappedBy = "user")
-	private  List<Envoloppe> envoloppes;
+	
 	
 	public User() {
 	}
@@ -62,13 +61,7 @@ public class User {
 		this.pieceJusticatif = pieceJusticatif;
 	}
 
-	public  List<Envoloppe> getEnvoloppes() {
-		return envoloppes;
-	}
 
-	public void setEnvoloppes( List<Envoloppe> envoloppes) {
-		this.envoloppes = envoloppes;
-	}
 
 	public User(String username, String prenom, String email, String piece_justicatif, String num_telephone) {
 		this.username = username;

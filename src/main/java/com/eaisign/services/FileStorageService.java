@@ -15,20 +15,22 @@ import org.springframework.web.multipart.MultipartFile;
 import com.eaisign.exceptions.UserNotFoundException;
 import com.eaisign.models.Document;
 import com.eaisign.models.Envoloppe;
+import com.eaisign.models.User;
 
 @Service
 public interface FileStorageService {
 	
 	//Envoloppes
 	
-	String CreateDirectory(String nom,Long id);
-	Envoloppe save(List<MultipartFile> files,String nom,String status,Long id);
+	String CreateDirectory(Long id);
+	Envoloppe saveEnvoloppe(String nom,String status,User user);
 	 List<Envoloppe> getAllEnvoloppes(Long id) throws UserNotFoundException;
 	 List<Envoloppe> getEnvoloppesByStatus(Long id,String status) throws UserNotFoundException;
 	 
 	//Documents
 	 
-	  void save(MultipartFile file,Long id ) ;
+	 Document saveDocument(MultipartFile file,Long id ) ;
+	 Document saveDocument(String nom,Envoloppe envoloppe);
 	  Resource load(String filename,Long id);
 	  Stream<Path> loadAll();
 	 

@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,6 +22,7 @@ import com.eaisign.exceptions.UserNotFoundException;
 import com.eaisign.models.Document;
 import com.eaisign.models.Envoloppe;
 import com.eaisign.models.User;
+import com.eaisign.repository.DocumentRepository;
 import com.eaisign.repository.EnvoloppeRepository;
 import com.eaisign.repository.UserRepository;
 import com.eaisign.services.FileStorageService;
@@ -32,12 +34,14 @@ public class FileStorageServiceImp implements FileStorageService {
 	private EnvoloppeRepository envoloppeRepo;
 	@Autowired
 	private UserRepository userRepo;
-	static final String ROOT = "C:/Users/akkabyas/Documents/EaiDocs/";
-
+	@Autowired 
+	private DocumentRepository documentRepo;
+	static final String ROOT = "C:/Users/yassi/OneDrive/Documents/EAI_Docs/";
+//	static final String ROOT = "C:/Users/akkabyas/Documents/EaiDocs/";
 	@Override
-	public String CreateDirectory(String nom, Long id) {
+	public String CreateDirectory( Long id) {
 
-		if (new File(ROOT + nom + id).mkdirs()) {
+		if (new File(ROOT + id).mkdirs()) {
 			return "Folder created";
 		} else {
 			return "Folder not created";
@@ -46,18 +50,14 @@ public class FileStorageServiceImp implements FileStorageService {
 	}
 
 	@Override
-	public Envoloppe save(List<MultipartFile> files, String nom, String status, Long id) {
-		
-		List<Document> documents = files.stream().map(file -> {
-			this.save(file, id);
-			Document doc = new Document();
-			doc.setNom(file.getOriginalFilename());
-			return doc;
-
-		}).collect(Collectors.toList());
-
-		Envoloppe envoloppe = new Envoloppe(nom, status, documents);
-		return envoloppeRepo.save(envoloppe);
+	public Envoloppe saveEnvoloppe( String nom, String status, User user) {
+			Envoloppe env=new Envoloppe(nom,status,user);
+			try {
+				return envoloppeRepo.save(env);
+			}catch(Exception e) {
+				throw new
+				  RuntimeException("Envoloppe not saved : " + e.getMessage());
+			}
 	}
 
 	@Override
@@ -87,27 +87,31 @@ public class FileStorageServiceImp implements FileStorageService {
 	}
 
 	@Override
-	public void save(MultipartFile file, Long id) {
+	public Document saveDocument(MultipartFile file, Long id) {
 
-		/*
-		 * root = ROOT + root; Path path = Paths.get(root); try {
-		 * Files.copy(file.getInputStream(), path.resolve(file.getOriginalFilename()));
-		 * } catch (Exception e) { throw new
-		 * RuntimeException("Could not store the file. Error: " + e.getMessage()); }
-		 */
+		
+		  String root = ROOT + id; 
+		  Path path = Paths.get(root);
+		  Document document=new Document(file.getOriginalFilename());
+		  try {
+		  Files.copy(file.getInputStream(), path.resolve(file.getOriginalFilename()));
+		  return document;
+		  } catch (Exception e) { throw new
+		  RuntimeException("Could not store the file. Error: " + e.getMessage()); }
+		 
 
 	}
 
 	@Override
 	public Resource load(String filename, Long id) {
-		/*
-		 * try { root = ROOT + root; Path path = Paths.get(root); Path file =
-		 * path.resolve(filename); Resource resource = new UrlResource(file.toUri()); if
-		 * (resource.exists() || resource.isReadable()) { return resource; } else {
-		 * throw new RuntimeException("Could not read the file!"); } } catch
-		 * (MalformedURLException e) { throw new RuntimeException("Error: " +
-		 * e.getMessage()); }
-		 */
+		
+//		  try { root = ROOT + root; Path path = Paths.get(root); Path file =
+//		  path.resolve(filename); Resource resource = new UrlResource(file.toUri()); if
+//		  (resource.exists() || resource.isReadable()) { return resource; } else {
+//		  throw new RuntimeException("Could not read the file!"); } } catch
+//		  (MalformedURLException e) { throw new RuntimeException("Error: " +
+//		  e.getMessage()); }
+		 
 		return null;
 	}
 
@@ -119,6 +123,12 @@ public class FileStorageServiceImp implements FileStorageService {
 		 * { throw new RuntimeException("Could not load the files!"); }
 		 */
 		return null;
+	}
+
+	@Override
+	public Document saveDocument(String nom, Envoloppe envoloppe) {
+		Document document = new Document(nom,envoloppe);
+		return documentRepo.save(document);
 	}
 
 }

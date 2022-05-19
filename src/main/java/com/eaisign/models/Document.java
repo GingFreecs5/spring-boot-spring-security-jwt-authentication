@@ -5,9 +5,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "aa_sg_docs")
 public class Document {
+	
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator = "id_Sequence")
@@ -27,7 +34,17 @@ public class Document {
 	private String nom;
 	private String url;
 	@ManyToOne
+	 @JoinColumn(name = "envoloppe_id", nullable = false)
+	 @OnDelete(action = OnDeleteAction.CASCADE)
+	 @JsonIgnore
 	private Envoloppe envoloppe;
-	
+	public Document(String originalFilename,Envoloppe envoloppe) {
+		this.nom=originalFilename;
+		this.envoloppe=envoloppe;
+		
+	}
+	public Document(String originalFilename) {
+		this.nom=originalFilename;
+	}
 
 }
