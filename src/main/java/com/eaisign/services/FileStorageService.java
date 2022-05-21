@@ -1,6 +1,7 @@
 package com.eaisign.services;
 
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.Base64;
 import java.util.List;
@@ -33,5 +34,5 @@ public interface FileStorageService {
 	 Document saveDocument(String nom,Envoloppe envoloppe);
 	  Resource load(String filename,Long id);
 	  Stream<Path> loadAll();
-	 
+	 String deleteFile(String fileName,Long id) throws IOException;
 }

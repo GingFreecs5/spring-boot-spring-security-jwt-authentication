@@ -1,5 +1,6 @@
 package com.eaisign.controllers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,7 +38,7 @@ import com.eaisign.services.implementations.UserServiceImp;
 @Controller
 
 @RequestMapping("/api/auth")
-
+@CrossOrigin(origins = "http://localhost:3000",maxAge = 3600)
 public class FileController {
 
 	@Autowired
@@ -93,6 +95,19 @@ public class FileController {
 			message = "User Not Found";
 			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
 
+		}
+	
+	}
+	
+	@PostMapping("/delete/{id}/{name}")
+	public ResponseEntity<ResponseMessage> deleteFile(@PathVariable("id")Long id,@PathVariable("name")String name){
+		String msg;
+		try {
+			msg = fileStorageService.deleteFile(name, id);
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(msg));
+		} catch (IOException e) {
+		
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
 		}
 	
 	}

@@ -3,9 +3,12 @@ package com.eaisign.services.implementations;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.sql.Date;
 import java.util.Arrays;
 import java.util.List;
@@ -94,13 +97,15 @@ public class FileStorageServiceImp implements FileStorageService {
 		  Path path = Paths.get(root);
 		  Document document=new Document(file.getOriginalFilename());
 		  try {
-		  Files.copy(file.getInputStream(), path.resolve(file.getOriginalFilename()));
+		  Files.copy(file.getInputStream(), path.resolve(file.getOriginalFilename()),StandardCopyOption.REPLACE_EXISTING);
 		  return document;
 		  } catch (Exception e) { throw new
 		  RuntimeException("Could not store the file. Error: " + e.getMessage()); }
 		 
 
 	}
+	
+	
 
 	@Override
 	public Resource load(String filename, Long id) {
@@ -131,4 +136,36 @@ public class FileStorageServiceImp implements FileStorageService {
 		return documentRepo.save(document);
 	}
 
-}
+	@Override
+	public String deleteFile(String fileName,Long id) {
+		
+		String msg="";
+		 String root = ROOT + id + "/"+fileName; 
+		 System.out.println(root);
+		  Path path = Paths.get(root);
+		 try {
+	            Files.deleteIfExists(path);
+	            System.out.println(Files.deleteIfExists(path));
+	            msg="File deleted";
+	        
+	        }
+	        catch (NoSuchFileException e) {
+	        
+	            msg="No such file/directory exists";
+	            
+	                   }
+	        catch (DirectoryNotEmptyException e) {
+	            msg="Directory is not empty.";
+	          
+	        }
+	        catch (IOException e) {
+	            msg="Directory is not empty.";
+	         
+	        }
+		    return msg;
+	   
+	    }
+		
+	}
+
+
