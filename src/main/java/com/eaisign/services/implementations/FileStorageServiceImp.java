@@ -1,7 +1,9 @@
 package com.eaisign.services.implementations;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.MalformedURLException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
@@ -11,6 +13,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Date;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,9 +24,10 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import com.eaisign.exceptions.UserNotFoundException;
 import com.eaisign.models.Document;
-import com.eaisign.models.Envoloppe;
+import com.eaisign.models.Enveloppe;
 import com.eaisign.models.User;
 import com.eaisign.repository.DocumentRepository;
 import com.eaisign.repository.EnvoloppeRepository;
@@ -45,16 +49,16 @@ public class FileStorageServiceImp implements FileStorageService {
 	public String CreateDirectory( Long id) {
 
 		if (new File(ROOT + id).mkdirs()) {
-			return "Folder created";
+			return "Folder created :" + id;
 		} else {
-			return "Folder not created";
+			return "Folder not created :" + id;
 		}
 
 	}
 
 	@Override
-	public Envoloppe saveEnvoloppe( String nom, String status, User user) {
-			Envoloppe env=new Envoloppe(nom,status,user);
+	public Enveloppe saveEnveloppe( String nom, String status, User user) {
+			Enveloppe env=new Enveloppe(nom,status,user);
 			try {
 				return envoloppeRepo.save(env);
 			}catch(Exception e) {
@@ -64,41 +68,46 @@ public class FileStorageServiceImp implements FileStorageService {
 	}
 
 	@Override
-	public List<Envoloppe> getAllEnvoloppes(Long id) throws UserNotFoundException {
+	public List<Enveloppe> getAllEnveloppes(Long id) throws UserNotFoundException {
 		User user = userRepo.findById(id).orElse(null);
 		if (user == null) {
 			throw new UserNotFoundException();
 		} else {
-			List<Envoloppe> envoloppes = envoloppeRepo.findByUser(user);
+			List<Enveloppe> envoloppes = envoloppeRepo.findByUser(user);
 			return envoloppes;
 		}
 
 	}
 
 	@Override
-	public List<Envoloppe> getEnvoloppesByStatus(Long id, String status) throws UserNotFoundException {
+	public List<Enveloppe> getEnveloppesByStatus(Long id, String status) throws UserNotFoundException {
 		// TODO Auto-generated method stub
 		User user = userRepo.findById(id).orElse(null);
 		if (user == null) {
 			throw new UserNotFoundException();
 
 		} else {
-			List<Envoloppe> envoloppes = envoloppeRepo.findByStatusAndUser(status, user);
+			List<Enveloppe> envoloppes = envoloppeRepo.findByStatusAndUser(status, user);
 			return envoloppes;
 
 		}
 	}
 
 	@Override
-	public Document saveDocument(MultipartFile file, Long id) {
+	public String uploadFile(MultipartFile file, Long id) {
 
 		
-		  String root = ROOT + id; 
+		  String storeRoot = ROOT + id; 
+		  Path storePath=Paths.get(storeRoot);
+		  String root=ROOT+id+"/"+file.getOriginalFilename();
 		  Path path = Paths.get(root);
 		  Document document=new Document(file.getOriginalFilename());
 		  try {
-		  Files.copy(file.getInputStream(), path.resolve(file.getOriginalFilename()),StandardCopyOption.REPLACE_EXISTING);
-		  return document;
+		  Files.copy(file.getInputStream(), storePath.resolve(file.getOriginalFilename()),StandardCopyOption.REPLACE_EXISTING);
+		//  documentRepo.save(document);
+		  File convFile=new File(file.getOriginalFilename());
+		
+		 return Base64.getEncoder().encodeToString(file.getBytes());
 		  } catch (Exception e) { throw new
 		  RuntimeException("Could not store the file. Error: " + e.getMessage()); }
 		 
@@ -131,7 +140,7 @@ public class FileStorageServiceImp implements FileStorageService {
 	}
 
 	@Override
-	public Document saveDocument(String nom, Envoloppe envoloppe) {
+	public Document saveDocument(String nom, Enveloppe envoloppe) {
 		Document document = new Document(nom,envoloppe);
 		return documentRepo.save(document);
 	}
@@ -143,9 +152,11 @@ public class FileStorageServiceImp implements FileStorageService {
 		 String root = ROOT + id + "/"+fileName; 
 		 System.out.println(root);
 		  Path path = Paths.get(root);
+		  
 		 try {
 	            Files.deleteIfExists(path);
 	            System.out.println(Files.deleteIfExists(path));
+	            
 	            msg="File deleted";
 	        
 	        }

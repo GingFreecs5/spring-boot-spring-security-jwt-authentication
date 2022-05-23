@@ -12,6 +12,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,19 +26,21 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.eaisign.exceptions.UserNotFoundException;
 import com.eaisign.models.Document;
-import com.eaisign.models.Envoloppe;
+import com.eaisign.models.Enveloppe;
 import com.eaisign.models.User;
 import com.eaisign.payload.message.ResponseFile;
 import com.eaisign.payload.message.ResponseMessage;
 import com.eaisign.payload.request.CreateFolderRequest;
 import com.eaisign.payload.request.NewEnvRequest;
+import com.eaisign.payload.response.File64Response;
 import com.eaisign.repository.UserRepository;
+import com.eaisign.security.services.UserDetailsImpl;
 import com.eaisign.services.FileStorageService;
 import com.eaisign.services.implementations.UserServiceImp;
 
 @Controller
 
-@RequestMapping("/api/auth")
+@RequestMapping("/api/files")
 @CrossOrigin(origins = "http://localhost:3000",maxAge = 3600)
 public class FileController {
 
@@ -49,61 +52,78 @@ public class FileController {
 	private UserServiceImp userServiceImp;
 	
 	@PostMapping("/createfolder")
-	public ResponseEntity<ResponseMessage> createFolder(@RequestBody CreateFolderRequest request) {
-		String msg = fileStorageService.CreateDirectory(request.getId());
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<ResponseMessage> createFolder() {
+		UserDetailsImpl user =(UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String msg = fileStorageService.CreateDirectory(user.getId());
 		return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(msg));
 	}
 
-	@PostMapping("/savefile/{id}")
-	public ResponseEntity<ResponseMessage> saveFile(@RequestParam("file") MultipartFile file,
-			@PathVariable("id") Long id) {
+	@PostMapping("/uploadfile")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<File64Response> uploadFile(@RequestParam("file") MultipartFile file) {
 		String message = "";
+		UserDetailsImpl user =(UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		
+		File64Response file64Response=new File64Response("","");
 		try {
-			fileStorageService.saveDocument(file, id);
+		
+			String file64= fileStorageService.uploadFile(file, user.getId());
+			file64Response.setName(file.getOriginalFilename());
+			file64Response.setPdfB64(file64);
 			message = "Uploaded the file successfully: " + file.getOriginalFilename();
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
+			
+			return ResponseEntity.status(HttpStatus.OK).body(file64Response);
 		} catch (Exception e) {
 			message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+			file64Response.setName(message);
+			file64Response.setPdfB64("undefined");
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(file64Response);
 		}
 
 	}
 
-	@PostMapping("/upload/{id}/{name}/{status}")
-	public ResponseEntity<ResponseMessage> uploadFiles(@RequestParam("files") MultipartFile[] files,
-			@PathVariable("id") Long id, @PathVariable("name") String name, @PathVariable("status") String status) {
-		String message = "";
-		User user;
-		try {
-			user = userServiceImp.findUser(id);
-			try {
-				List<String> fileNames = new ArrayList<>();
-				Envoloppe envoloppe = fileStorageService.saveEnvoloppe(name, status, user);
-				Arrays.asList(files).stream().forEach(file -> {
-					fileStorageService.saveDocument(file, id);
-					fileStorageService.saveDocument(file.getOriginalFilename(), envoloppe);
-					fileNames.add(file.getOriginalFilename());
-				});
-
-				message = "Uploaded the files successfully: " + fileNames;
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
-			} catch (Exception e) {
-				message = "Fail to upload files!";
-				return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
-			}
-		} catch (UserNotFoundException e1) {
-			message = "User Not Found";
-			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
-
-		}
+//	@PostMapping("/upload/{id}/{name}/{status}")
+//	public ResponseEntity<?> uploadFiles(@RequestParam("files") MultipartFile[] files,
+//			@PathVariable("id") Long id, @PathVariable("name") String name, @PathVariable("status") String status) {
+//		File64Response file64Response=new File64Response("","");
+//		User user;
+//		try {
+//			user = userServiceImp.findUser(id);
+//			try {
+//				List<String> fileNames = new ArrayList<>();
+//				Enveloppe envoloppe = fileStorageService.saveEnveloppe(name, status, user);
+//				Arrays.asList(files).stream().forEach(file -> {
+//					String file64= fileStorageService.uploadFile(file, id);
+//					file64Response.setName(file.getOriginalFilename());
+//					file64Response.setBase64(file64);
+//					 fileStorageService.saveDocument(file.getOriginalFilename(), envoloppe);
+//					fileNames.add(file.getOriginalFilename());
+//				});
+//
+//				
+//				return ResponseEntity.status(HttpStatus.OK).body(file64Response);
+//			} catch (Exception e) {
+//				file64Response.setName("undefined");
+//				file64Response.setBase64("undefined");
+//				return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(file64Response);
+//			}
+//		} catch (UserNotFoundException e1) {
+//			message = "User Not Found";
+//			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+//
+//		}
+//	
+//	}
 	
-	}
-	
-	@PostMapping("/delete/{id}/{name}")
-	public ResponseEntity<ResponseMessage> deleteFile(@PathVariable("id")Long id,@PathVariable("name")String name){
+	@PostMapping("/delete/{name}")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<ResponseMessage> deleteFile(@PathVariable("name")String name){
 		String msg;
+		UserDetailsImpl user =(UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
 		try {
-			msg = fileStorageService.deleteFile(name, id);
+			msg = fileStorageService.deleteFile(name, user.getId());
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(msg));
 		} catch (IOException e) {
 		

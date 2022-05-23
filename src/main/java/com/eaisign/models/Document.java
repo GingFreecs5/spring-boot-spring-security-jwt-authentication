@@ -37,10 +37,10 @@ public class Document {
 	 @JoinColumn(name = "envoloppe_id", nullable = false)
 	 @OnDelete(action = OnDeleteAction.CASCADE)
 	 @JsonIgnore
-	private Envoloppe envoloppe;
-	public Document(String originalFilename,Envoloppe envoloppe) {
+	private Enveloppe enveloppe;
+	public Document(String originalFilename,Enveloppe envoloppe) {
 		this.nom=originalFilename;
-		this.envoloppe=envoloppe;
+		this.enveloppe=envoloppe;
 		
 	}
 	public Document(String originalFilename) {

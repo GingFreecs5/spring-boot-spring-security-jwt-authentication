@@ -32,9 +32,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "aa_sg_envoloppes")
+@Table(name = "aa_sg_enveloppes")
 
-public class Envoloppe {
+public class Enveloppe {
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator = "id_Sequence")
@@ -60,7 +60,7 @@ public class Envoloppe {
 			dateAjout=new Date();
 		}
 	}
-	public Envoloppe(String nom,String status,User user) {
+	public Enveloppe(String nom,String status,User user) {
 		this.nom=nom;
 		this.status=status;
 		this.user=user;
