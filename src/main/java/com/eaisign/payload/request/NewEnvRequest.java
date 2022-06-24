@@ -10,6 +10,6 @@ import lombok.Data;
 public class NewEnvRequest {
 	private String nom;
 	private String status;
-	private Long id;
-	private MultipartFile[] files;
+
+	private String[] files;
 }

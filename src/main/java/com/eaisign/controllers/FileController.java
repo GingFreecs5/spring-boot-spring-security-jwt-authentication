@@ -115,6 +115,33 @@ public class FileController {
 //		}
 //	
 //	}
+	@PostMapping("/saveEnveloppe")                        
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<?> SaveEnveloppe(@RequestBody NewEnvRequest request){
+		String message="";
+		UserDetailsImpl user =(UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		try {
+		User user_=userServiceImp.findUser(user.getId());
+		
+		try {
+			Enveloppe envoloppe = fileStorageService.saveEnveloppe(request.getNom(), request.getStatus(), user_);
+			for (String file : request.getFiles()) {
+				fileStorageService.saveDocument(file, envoloppe);			
+			}
+			
+			message="Envelope sauvegardé";
+			
+			return ResponseEntity.status(HttpStatus.OK).body(envoloppe);
+		} catch (Exception e) {
+			message="Error";
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+		}	
+		} catch (UserNotFoundException e1) {
+			message = "User Not Found";
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+
+		}
+	}
 	
 	@PostMapping("/delete/{name}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
@@ -131,4 +158,23 @@ public class FileController {
 		}
 	
 	}
+	
+	@PostMapping("/deletefiles/{name}")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<ResponseMessage> deleteFiles(@RequestBody String[] files){
+		String msg;
+		UserDetailsImpl user =(UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		try {
+			for(String filename:files) {
+				fileStorageService.deleteFile(filename, user.getId());
+			}
+			msg="files Deleted";
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(msg));
+		} catch (IOException e) {
+		
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
+		}
+	}
+	
 }

@@ -29,7 +29,6 @@ public interface FileStorageService {
 	 List<Enveloppe> getEnveloppesByStatus(Long id,String status) throws UserNotFoundException;
 	 
 	//Documents
-	 
 	 String uploadFile(MultipartFile file,Long id ) ;
 	 Document saveDocument(String nom,Enveloppe envoloppe);
 	  Resource load(String filename,Long id);

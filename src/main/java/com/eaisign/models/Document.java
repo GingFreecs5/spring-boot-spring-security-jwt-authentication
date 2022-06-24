@@ -1,5 +1,6 @@
 package com.eaisign.models;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,11 +8,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -33,11 +33,14 @@ public class Document {
 	private Long id;
 	private String nom;
 	private String url;
-	@ManyToOne
-	 @JoinColumn(name = "envoloppe_id", nullable = false)
-	 @OnDelete(action = OnDeleteAction.CASCADE)
+	@ManyToOne( cascade = CascadeType.ALL)
+	 @JoinColumn(name = "enveloppe_id", nullable = false)
 	 @JsonIgnore
 	private Enveloppe enveloppe;
+	@OneToOne( cascade = CascadeType.ALL)
+	@JoinColumn(name="Signataire")
+	@JsonIgnore
+	private Signataire signataire;
 	public Document(String originalFilename,Enveloppe envoloppe) {
 		this.nom=originalFilename;
 		this.enveloppe=envoloppe;
