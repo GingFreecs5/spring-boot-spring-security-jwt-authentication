@@ -10,6 +10,7 @@ import javax.validation.Valid;
 import com.eaisign.models.ERole;
 import com.eaisign.models.Role;
 import com.eaisign.models.User;
+import com.eaisign.payload.message.ResponseMessage;
 import com.eaisign.payload.request.CheckEmailRequest;
 import com.eaisign.payload.request.LoginRequest;
 import com.eaisign.payload.request.SignupRequest;
@@ -19,6 +20,7 @@ import com.eaisign.repository.RoleRepository;
 import com.eaisign.repository.UserRepository;
 import com.eaisign.security.jwt.JwtUtils;
 import com.eaisign.security.services.UserDetailsImpl;
+import com.eaisign.services.FileStorageService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -55,6 +58,9 @@ public class AuthController {
 
   @Autowired
   JwtUtils jwtUtils;
+  
+  @Autowired
+  FileStorageService fileStorageService;
 
   @PostMapping("/checkEmail")
   public  ResponseEntity<?> checkEmail(@Valid @RequestBody CheckEmailRequest checkEmailRequest){
@@ -133,8 +139,12 @@ public class AuthController {
     user.setRoles(roles);
     userRepository.save(user);
 
-    return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    return ResponseEntity.ok(user.getId());
   }
-
+  @PostMapping("/createfolder/{id}")
+	public ResponseEntity<ResponseMessage> createFolder(@PathVariable("id") Long id) {
+		String msg = fileStorageService.CreateDirectory(id);
+		return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(msg));
+	}
 
 }

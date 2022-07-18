@@ -51,13 +51,7 @@ public class FileController {
 	@Autowired
 	private UserServiceImp userServiceImp;
 	
-	@PostMapping("/createfolder")
-	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<ResponseMessage> createFolder() {
-		UserDetailsImpl user =(UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		String msg = fileStorageService.CreateDirectory(user.getId());
-		return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(msg));
-	}
+	
 
 	@PostMapping("/uploadfile")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
@@ -124,14 +118,15 @@ public class FileController {
 		User user_=userServiceImp.findUser(user.getId());
 		
 		try {
-			Enveloppe envoloppe = fileStorageService.saveEnveloppe(request.getNom(), request.getStatus(), user_);
-			for (String file : request.getFiles()) {
-				fileStorageService.saveDocument(file, envoloppe);			
-			}
+			Enveloppe enveloppe = fileStorageService.saveEnveloppe(request.getNom(), request.getStatus(), user_);
+			Enveloppe env=fileStorageService.getEnveloppe(4952L);
+		for (String file : request.getFiles()) {
+			fileStorageService.saveDocument(file, env);			
+		}
 			
 			message="Envelope sauvegardé";
 			
-			return ResponseEntity.status(HttpStatus.OK).body(envoloppe);
+			return ResponseEntity.status(HttpStatus.OK).body(enveloppe);
 		} catch (Exception e) {
 			message="Error";
 			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
@@ -159,7 +154,7 @@ public class FileController {
 	
 	}
 	
-	@PostMapping("/deletefiles/{name}")
+	@PostMapping("/deletefiles")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<ResponseMessage> deleteFiles(@RequestBody String[] files){
 		String msg;

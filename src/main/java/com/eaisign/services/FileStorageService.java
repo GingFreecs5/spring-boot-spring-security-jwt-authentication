@@ -25,6 +25,7 @@ public interface FileStorageService {
 	
 	String CreateDirectory(Long id);
 	Enveloppe saveEnveloppe(String nom,String status,User user);
+	Enveloppe getEnveloppe(Long id);
 	 List<Enveloppe> getAllEnveloppes(Long id) throws UserNotFoundException;
 	 List<Enveloppe> getEnveloppesByStatus(Long id,String status) throws UserNotFoundException;
 	 
