@@ -55,10 +55,11 @@ public class Enveloppe {
 			dateAjout=new Date();
 		}
 	}
-	public Enveloppe(String nom,String status,User user) {
+	public Enveloppe(String nom,String status,Boolean favoris,User user) {
 		this.nom=nom;
 		this.status=status;
 		this.user=user;
+		this.favoris=favoris;
 	}
 	
 

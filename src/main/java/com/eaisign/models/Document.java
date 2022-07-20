@@ -32,7 +32,7 @@ public class Document {
 	@SequenceGenerator(name = "id_Sequence", sequenceName = "ID_SEQ")
 	private Long id;
 	private String nom;
-	private String url;
+	private String canalUtilise;
 	@ManyToOne( cascade = CascadeType.ALL)
 	 @JoinColumn(name = "enveloppe_id", nullable = false)
 	 @JsonIgnore
@@ -41,13 +41,19 @@ public class Document {
 	@JoinColumn(name="Signataire")
 	@JsonIgnore
 	private Signataire signataire;
-	public Document(String originalFilename,Enveloppe envoloppe) {
-		this.nom=originalFilename;
-		this.enveloppe=envoloppe;
+	public Document(String nom,Enveloppe enveloppe) {
+		this.nom=nom;
+		this.enveloppe=enveloppe;
 		
 	}
 	public Document(String originalFilename) {
 		this.nom=originalFilename;
 	}
+	public Document(String nom, Enveloppe enveloppe, String canalUtilise, Signataire signataire) {
+		this.nom=nom;
+		this.enveloppe=enveloppe;
+		this.canalUtilise=canalUtilise;
+		this.signataire=signataire;
 
+}
 }

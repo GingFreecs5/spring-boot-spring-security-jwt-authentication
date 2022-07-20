@@ -11,5 +11,5 @@ public class NewEnvRequest {
 	private String nom;
 	private String status;
 
-	private  String[] files;
+	private  Boolean favoris;
 }

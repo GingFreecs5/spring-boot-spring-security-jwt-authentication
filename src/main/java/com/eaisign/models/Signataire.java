@@ -29,4 +29,8 @@ public class Signataire {
 	private String email;
 	private String nom;
 	private String prenom;
+	
+	public Signataire(String email){
+		this.email=email;
+	}
 }

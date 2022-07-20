@@ -24,13 +24,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.eaisign.exceptions.EnveloppeNotFoundException;
 import com.eaisign.exceptions.UserNotFoundException;
 import com.eaisign.models.Document;
 import com.eaisign.models.Enveloppe;
+import com.eaisign.models.Signataire;
 import com.eaisign.models.User;
 import com.eaisign.payload.message.ResponseFile;
 import com.eaisign.payload.message.ResponseMessage;
 import com.eaisign.payload.request.CreateFolderRequest;
+import com.eaisign.payload.request.NewDocRequest;
 import com.eaisign.payload.request.NewEnvRequest;
 import com.eaisign.payload.response.File64Response;
 import com.eaisign.repository.UserRepository;
@@ -116,14 +119,8 @@ public class FileController {
 		UserDetailsImpl user =(UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		try {
 		User user_=userServiceImp.findUser(user.getId());
-		
 		try {
-			Enveloppe enveloppe = fileStorageService.saveEnveloppe(request.getNom(), request.getStatus(), user_);
-			Enveloppe env=fileStorageService.getEnveloppe(4952L);
-		for (String file : request.getFiles()) {
-			fileStorageService.saveDocument(file, env);			
-		}
-			
+			Enveloppe enveloppe = fileStorageService.saveEnveloppe(request.getNom(), request.getStatus(),request.getFavoris(), user_);
 			message="Envelope sauvegardé";
 			
 			return ResponseEntity.status(HttpStatus.OK).body(enveloppe);
@@ -137,7 +134,26 @@ public class FileController {
 
 		}
 	}
-	
+	@PostMapping("/saveDocuments")                        
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<?> SaveDocuments(@RequestBody NewDocRequest request){
+		String message="";
+		System.out.println(request);
+		try {
+		Enveloppe enveloppe=fileStorageService.getEnveloppe(request.idEnveloppe);
+		Signataire signataire=fileStorageService.saveSignataire(request.email);
+		
+		for(String file:request.files) {
+			Document document=fileStorageService.saveDocument(file, enveloppe, request.canalUtilise, signataire);
+			
+		}
+		message="Documents enregistrés";
+		return ResponseEntity.status(HttpStatus.OK).body(message);
+		}catch(EnveloppeNotFoundException e) {
+			message = "Enveloppe Not Found";
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+		}
+	}
 	@PostMapping("/delete/{name}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<ResponseMessage> deleteFile(@PathVariable("name")String name){
@@ -169,6 +185,23 @@ public class FileController {
 		} catch (IOException e) {
 		
 			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
+		}
+	}
+	
+	@GetMapping("/getEnveloppes")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<?> GetEnveloppes(){
+		String msg;
+		UserDetailsImpl user =(UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		try {
+			List<Enveloppe> enveloppes=fileStorageService.getAllEnveloppes(user.getId());
+			return ResponseEntity.status(HttpStatus.OK).body(enveloppes);
+			
+
+		}catch(UserNotFoundException e) {
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
+
 		}
 	}
 	
