@@ -9,9 +9,14 @@ import com.eaisign.repository.UserRepository;
 
 @Service
 public class UserServiceImp {
-	@Autowired
-	UserRepository userRepository;
 	
+	private final UserRepository  userRepository;
+	
+	public UserServiceImp(UserRepository userRepository) {
+		super();
+		this.userRepository = userRepository;
+	}
+
 	public User findUser(Long id) throws UserNotFoundException {
 		User user = userRepository.findById(id).orElse(null);
 		if(user==null) {

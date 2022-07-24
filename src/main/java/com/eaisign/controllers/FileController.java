@@ -1,5 +1,6 @@
 package com.eaisign.controllers;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,9 +31,11 @@ import com.eaisign.models.Document;
 import com.eaisign.models.Enveloppe;
 import com.eaisign.models.Signataire;
 import com.eaisign.models.User;
+import com.eaisign.payload.message.FilesbyEnveloppeIdResponse;
 import com.eaisign.payload.message.ResponseFile;
 import com.eaisign.payload.message.ResponseMessage;
 import com.eaisign.payload.request.CreateFolderRequest;
+import com.eaisign.payload.request.GetDocsByEnvidRequest;
 import com.eaisign.payload.request.NewDocRequest;
 import com.eaisign.payload.request.NewEnvRequest;
 import com.eaisign.payload.response.File64Response;
@@ -47,39 +50,59 @@ import com.eaisign.services.implementations.UserServiceImp;
 @CrossOrigin(origins = "http://localhost:3000",maxAge = 3600)
 public class FileController {
 
-	@Autowired
+	 static final String ROOT = "C:/Users/yassi/OneDrive/Documents/EAI_Docs/";
+	 
 	private FileStorageService fileStorageService;
-	@Autowired
+
 	private UserRepository userRepository;
-	@Autowired
+
 	private UserServiceImp userServiceImp;
+
+	public FileController(FileStorageService fileStorageService, UserRepository userRepository,
+			UserServiceImp userServiceImp) {
+		super();
+		this.fileStorageService = fileStorageService;
+		this.userRepository = userRepository;
+		this.userServiceImp = userServiceImp;
+	}
 	
-	
+				/*************************************** Upload File ***************************************/
 
 	@PostMapping("/uploadfile")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<File64Response> uploadFile(@RequestParam("file") MultipartFile file) {
 		String message = "";
 		UserDetailsImpl user =(UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		
+
 		File64Response file64Response=new File64Response("","");
-		try {
-		
-			String file64= fileStorageService.uploadFile(file, user.getId());
-			file64Response.setName(file.getOriginalFilename());
-			file64Response.setPdfB64(file64);
-			message = "Uploaded the file successfully: " + file.getOriginalFilename();
-			
-			return ResponseEntity.status(HttpStatus.OK).body(file64Response);
-		} catch (Exception e) {
-			message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-			file64Response.setName(message);
-			file64Response.setPdfB64("undefined");
-			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(file64Response);
-		}
-
+		String file64= fileStorageService.uploadFile(file,ROOT+ user.getId());
+		file64Response.setName(file.getOriginalFilename());
+		file64Response.setPdfB64(file64);
+		message = "Uploaded the file successfully: " + file.getOriginalFilename();		
+		return ResponseEntity.status(HttpStatus.OK).body(file64Response);
+	
 	}
+	
+	/*************************************** Get Files by EnveloppeId ***************************************/
+	@PostMapping("/getFiles/{envId}")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<List<FilesbyEnveloppeIdResponse>> getFilesbyEnveloppeId(@PathVariable("envId")Long envId ){
+		List<FilesbyEnveloppeIdResponse> filesbyEnveloppeIdResponses=new ArrayList<FilesbyEnveloppeIdResponse>();
+		UserDetailsImpl user =(UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String path=ROOT+user.getId()+"/"+envId;
+		System.out.println(path);
+		File[] files=fileStorageService.getFilesbyEnvid(path);
+		for(File file:files) {
+			filesbyEnveloppeIdResponses.add(new FilesbyEnveloppeIdResponse(file.getName(), false));
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(filesbyEnveloppeIdResponses);
+		
+	}
+	
+	
+	/************************************ Upload Files ***************************************/
 
+	
 //	@PostMapping("/upload/{id}/{name}/{status}")
 //	public ResponseEntity<?> uploadFiles(@RequestParam("files") MultipartFile[] files,
 //			@PathVariable("id") Long id, @PathVariable("name") String name, @PathVariable("status") String status) {
@@ -112,6 +135,9 @@ public class FileController {
 //		}
 //	
 //	}
+	
+								/**************************************Save Enveloppe****************************************/
+
 	@PostMapping("/saveEnveloppe")                        
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<?> SaveEnveloppe(@RequestBody NewEnvRequest request){
@@ -122,7 +148,7 @@ public class FileController {
 		try {
 			Enveloppe enveloppe = fileStorageService.saveEnveloppe(request.getNom(), request.getStatus(),request.getFavoris(), user_);
 			message="Envelope sauvegardé";
-			
+			System.out.println(enveloppe);
 			return ResponseEntity.status(HttpStatus.OK).body(enveloppe);
 		} catch (Exception e) {
 			message="Error";
@@ -134,26 +160,42 @@ public class FileController {
 
 		}
 	}
+	
+	
+								/************************************** Save Documents *************************************/
+	
 	@PostMapping("/saveDocuments")                        
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<?> SaveDocuments(@RequestBody NewDocRequest request){
+		boolean fileMoved=false;
+		UserDetailsImpl user =(UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		fileStorageService.CreateDirectory(ROOT+user.getId()+"/"+request.getIdEnveloppe());
+
 		String message="";
-		System.out.println(request);
-		try {
 		Enveloppe enveloppe=fileStorageService.getEnveloppe(request.idEnveloppe);
 		Signataire signataire=fileStorageService.saveSignataire(request.email);
-		
 		for(String file:request.files) {
-			Document document=fileStorageService.saveDocument(file, enveloppe, request.canalUtilise, signataire);
-			
+		Document document=fileStorageService.saveDocument(file, enveloppe, request.canalUtilise, signataire);
+		fileMoved=fileStorageService.copyFile(ROOT+user.getId()+"/"+file, ROOT+user.getId()+"/"+request.getIdEnveloppe()+"/"+file);
+		if(!fileMoved) break;
 		}
-		message="Documents enregistrés";
-		return ResponseEntity.status(HttpStatus.OK).body(message);
-		}catch(EnveloppeNotFoundException e) {
-			message = "Enveloppe Not Found";
-			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
+		if(fileMoved) {
+			return ResponseEntity.status(HttpStatus.OK).body(message);
+
+		}else {
+			message="Documents pas enregistrés";
+
+			return ResponseEntity.status(HttpStatus.OK).body(message);
+
 		}
+		
+	
+		
+		
 	}
+	
+								/******************************** Delete File ************************************/
+
 	@PostMapping("/delete/{name}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<ResponseMessage> deleteFile(@PathVariable("name")String name){
@@ -161,7 +203,7 @@ public class FileController {
 		UserDetailsImpl user =(UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 		try {
-			msg = fileStorageService.deleteFile(name, user.getId());
+			msg = fileStorageService.deleteFile(name, ROOT+user.getId());
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(msg));
 		} catch (IOException e) {
 		
@@ -170,6 +212,8 @@ public class FileController {
 	
 	}
 	
+							/************************************ Delete Files ***************************************/
+
 	@PostMapping("/deletefiles")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<ResponseMessage> deleteFiles(@RequestBody String[] files){
@@ -178,7 +222,7 @@ public class FileController {
 
 		try {
 			for(String filename:files) {
-				fileStorageService.deleteFile(filename, user.getId());
+				fileStorageService.deleteFile(filename,ROOT+ user.getId());
 			}
 			msg="files Deleted";
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(msg));
@@ -187,7 +231,8 @@ public class FileController {
 			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(e.getMessage()));
 		}
 	}
-	
+				/************************************ Get Enveloppes ***************************************/
+
 	@GetMapping("/getEnveloppes")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<?> GetEnveloppes(){
@@ -204,5 +249,19 @@ public class FileController {
 
 		}
 	}
+	
+				/************************************ Get Documents ***************************************/
+
+	@GetMapping("/getDocuments")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<?> GetDocuments(@RequestBody GetDocsByEnvidRequest request){
+		System.out.println(request.getEnvId());
+		List<Document> enveloppes=fileStorageService.getDocumentsbyEnveloppeId(request.getEnvId());
+		return ResponseEntity.status(HttpStatus.OK).body(enveloppes);
+		
+
+		
+	}
+	
 	
 }

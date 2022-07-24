@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @AllArgsConstructor
-
+@NoArgsConstructor
 
 @Table(name = "aa_sg_signataires")
 public class Signataire {

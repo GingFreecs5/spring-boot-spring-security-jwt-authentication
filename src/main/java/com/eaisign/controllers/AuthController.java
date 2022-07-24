@@ -44,24 +44,32 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
   private static final Logger logger=LoggerFactory.getLogger(AuthController.class);
-  @Autowired
-  AuthenticationManager authenticationManager;
+  static final String ROOT = "C:/Users/yassi/OneDrive/Documents/EAI_Docs/";
 
-  @Autowired
-  UserRepository userRepository;
 
-  @Autowired
+AuthenticationManager authenticationManager;
+
+  
+  UserRepository userRepository;
   RoleRepository roleRepository;
 
-  @Autowired
   PasswordEncoder encoder;
 
-  @Autowired
-  JwtUtils jwtUtils;
-  
-  @Autowired
+  JwtUtils jwtUtils;
   FileStorageService fileStorageService;
-
+  public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
+		RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils,
+		FileStorageService fileStorageService) {
+	super();
+	this.authenticationManager = authenticationManager;
+	this.userRepository = userRepository;
+	this.roleRepository = roleRepository;
+	this.encoder = encoder;
+	this.jwtUtils = jwtUtils;
+	this.fileStorageService = fileStorageService;
+}
+  
+  
   @PostMapping("/checkEmail")
   public  ResponseEntity<?> checkEmail(@Valid @RequestBody CheckEmailRequest checkEmailRequest){
   logger.info(checkEmailRequest.getEmail());
@@ -143,7 +151,7 @@ public class AuthController {
   }
   @PostMapping("/createfolder/{id}")
 	public ResponseEntity<ResponseMessage> createFolder(@PathVariable("id") Long id) {
-		String msg = fileStorageService.CreateDirectory(id);
+		String msg = fileStorageService.CreateDirectory(ROOT+id);
 		return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(msg));
 	}
 

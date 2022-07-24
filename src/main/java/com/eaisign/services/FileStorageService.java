@@ -1,5 +1,6 @@
 package com.eaisign.services;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -25,17 +26,23 @@ public interface FileStorageService {
 	
 	//Envelopes
 	
-	String CreateDirectory(Long id);
-	Enveloppe saveEnveloppe(String nom,String status,Boolean favoris,User user);
-	Enveloppe getEnveloppe(Long id) throws EnveloppeNotFoundException;
+
+  	 Enveloppe saveEnveloppe(String nom,String status,Boolean favoris,User user);
+	 Enveloppe getEnveloppe(Long id) throws EnveloppeNotFoundException;
 	 List<Enveloppe> getAllEnveloppes(Long id) throws UserNotFoundException;
 	 List<Enveloppe> getEnveloppesByStatus(Long id,String status) throws UserNotFoundException;
 	 
 	//Documents
-	 String uploadFile(MultipartFile file,Long id ) ;
 	 Document saveDocument(String nom,Enveloppe envoloppe,String canalUtilise,Signataire signataire);
+	 List<Document> getDocumentsbyEnveloppeId(Long id);
+	
+	 
+	 //Files
+	 String CreateDirectory(String root);
+	 String uploadFile(MultipartFile file,String root );
+	 boolean copyFile(String sourcePath,String targetPath);
+	 String deleteFile(String fileName,String root) throws IOException;
+	 File[] getFilesbyEnvid(String root);
+	 //Signataires
 	 Signataire saveSignataire(String email);
-	  Resource load(String filename,Long id);
-	  Stream<Path> loadAll();
-	 String deleteFile(String fileName,Long id) throws IOException;
 }
