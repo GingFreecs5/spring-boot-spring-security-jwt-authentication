@@ -9,6 +9,9 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 @Entity
 @Table(name = "aa_sg_users", uniqueConstraints = { @UniqueConstraint(columnNames = "email") })
 public class User {
@@ -40,7 +43,8 @@ public class User {
 	@JoinTable(name = "aa_sg_user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
 	
-	
+	@OneToMany(mappedBy = "user")
+	private List<Enveloppe> enveloppes;
 	
 	public User() {
 	}

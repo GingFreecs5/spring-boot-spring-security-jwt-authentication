@@ -2,6 +2,7 @@ package com.eaisign.models;
 
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -11,12 +12,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -38,14 +43,19 @@ public class Enveloppe {
 	private Long id;
 	private String nom;
 	private String status;
+	@OneToMany(mappedBy = "enveloppe",cascade={CascadeType.ALL})
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private List<Document> documents;
+	
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date dateAjout;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date derniereModification;
 	private Boolean favoris;
-	@ManyToOne( cascade = CascadeType.ALL)
-	 @JoinColumn(name = "user_id", nullable = false)
-	 @JsonIgnore
+	@ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+	@JsonIgnore
 	private User user;
 	@PrePersist
 	@PreUpdate

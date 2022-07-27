@@ -1,12 +1,17 @@
 package com.eaisign.models;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -29,7 +34,9 @@ public class Signataire {
 	private String email;
 	private String nom;
 	private String prenom;
-	
+	@OneToOne( cascade = CascadeType.ALL)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private Document document;
 	public Signataire(String email){
 		this.email=email;
 	}

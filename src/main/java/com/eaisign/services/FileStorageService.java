@@ -28,14 +28,15 @@ public interface FileStorageService {
 	
 
   	 Enveloppe saveEnveloppe(String nom,String status,Boolean favoris,User user);
+  	 Enveloppe saveEnveloppe(Enveloppe enveloppe);
 	 Enveloppe getEnveloppe(Long id) throws EnveloppeNotFoundException;
 	 List<Enveloppe> getAllEnveloppes(Long id) throws UserNotFoundException;
 	 List<Enveloppe> getEnveloppesByStatus(Long id,String status) throws UserNotFoundException;
-	 
+	 void deleteEnveloppe(Long envId) ;
 	//Documents
 	 Document saveDocument(String nom,Enveloppe envoloppe,String canalUtilise,Signataire signataire);
 	 List<Document> getDocumentsbyEnveloppeId(Long id);
-	
+	 void deleteDocument(Long id);
 	 
 	 //Files
 	 String CreateDirectory(String root);
