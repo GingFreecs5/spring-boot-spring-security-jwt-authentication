@@ -13,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import lombok.ToString;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -22,12 +23,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "aa_sg_docs")
-public class Document {
+public class Document implements Serializable {
 	
 	@Id
 	@Column(name = "ID")
@@ -36,15 +39,15 @@ public class Document {
 	private Long id;
 	private String nom;
 	private String canalUtilise;
-	@ManyToOne(  cascade = CascadeType.ALL)
+	@ManyToOne
 	 @JoinColumn(name = "enveloppe_id", nullable = false)
-	 @JsonIgnore
 	private Enveloppe enveloppe;
-	@OneToOne(mappedBy = "document", cascade = CascadeType.ALL)
-	@JoinColumn(name="signataire_id", nullable = false)
+	@OneToOne
+	@JoinColumn(name="signataire_id")
 	@OnDelete(action = OnDeleteAction.CASCADE)
-	@JsonIgnore
 	private Signataire signataire;
+
+
 	public Document(String nom,Enveloppe enveloppe) {
 		this.nom=nom;
 		this.enveloppe=enveloppe;
@@ -60,4 +63,5 @@ public class Document {
 		this.signataire=signataire;
 
 }
+
 }

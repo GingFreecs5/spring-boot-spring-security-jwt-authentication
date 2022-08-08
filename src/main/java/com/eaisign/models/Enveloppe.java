@@ -1,6 +1,7 @@
 package com.eaisign.models;
 
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +21,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import lombok.ToString;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -35,7 +37,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "aa_sg_enveloppes")
 
-public class Enveloppe {
+public class Enveloppe implements Serializable {
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator = "id_Sequence")
@@ -44,6 +46,8 @@ public class Enveloppe {
 	private String nom;
 	private String status;
 	@OneToMany(mappedBy = "enveloppe",cascade={CascadeType.ALL})
+	@JsonIgnore
+	@ToString.Exclude
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private List<Document> documents;
 	
@@ -71,6 +75,6 @@ public class Enveloppe {
 		this.user=user;
 		this.favoris=favoris;
 	}
-	
+
 
 }

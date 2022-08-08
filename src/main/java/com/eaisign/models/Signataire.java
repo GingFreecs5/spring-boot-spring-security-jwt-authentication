@@ -10,6 +10,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import lombok.ToString;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -34,7 +35,9 @@ public class Signataire {
 	private String email;
 	private String nom;
 	private String prenom;
-	@OneToOne( cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "signataire")
+	@JsonIgnore
+	@ToString.Exclude
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Document document;
 	public Signataire(String email){

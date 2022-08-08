@@ -1,6 +1,7 @@
 package com.eaisign.controllers;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -9,6 +10,9 @@ import java.util.List;
 
 import java.util.stream.Collectors;
 
+import com.eaisign.payload.request.*;
+import com.eaisign.services.ReportService;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -37,10 +41,6 @@ import com.eaisign.models.User;
 import com.eaisign.payload.message.FilesbyEnveloppeIdResponse;
 import com.eaisign.payload.message.ResponseFile;
 import com.eaisign.payload.message.ResponseMessage;
-import com.eaisign.payload.request.CreateFolderRequest;
-import com.eaisign.payload.request.GetDocsByEnvidRequest;
-import com.eaisign.payload.request.NewDocRequest;
-import com.eaisign.payload.request.NewEnvRequest;
 import com.eaisign.payload.response.File64Response;
 import com.eaisign.repository.UserRepository;
 import com.eaisign.security.services.UserDetailsImpl;
@@ -61,12 +61,16 @@ public class FileController {
 
 	private UserServiceImp userServiceImp;
 
+
+
+	
 	public FileController(FileStorageService fileStorageService, UserRepository userRepository,
 			UserServiceImp userServiceImp) {
 		super();
 		this.fileStorageService = fileStorageService;
 		this.userRepository = userRepository;
 		this.userServiceImp = userServiceImp;
+		
 	}
 
 	/***************************************
@@ -91,7 +95,7 @@ public class FileController {
 	/***************************************
 	 * Get Files by EnveloppeId
 	 ***************************************/
-	@PostMapping("/getFiles/{envId}")
+	@PostMapping("/files/{envId}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<List<FilesbyEnveloppeIdResponse>> getFilesbyEnveloppeId(@PathVariable("envId") Long envId) {
 		List<FilesbyEnveloppeIdResponse> filesbyEnveloppeIdResponses = new ArrayList<FilesbyEnveloppeIdResponse>();
@@ -201,7 +205,7 @@ public class FileController {
 		String message = "Files saved";
 		Enveloppe enveloppe = fileStorageService.getEnveloppe(request.getIdEnveloppe());
 		Signataire signataire = fileStorageService.saveSignataire(request.getEmail());
-
+		List<Signataire> signataires=new ArrayList<>();
 		for (String file : request.getFiles()) {
 			Document document = fileStorageService.saveDocument(file, enveloppe, request.getCanalUtilise(), signataire);
 			if(request.isCopyFiles()) {
@@ -233,7 +237,7 @@ public class FileController {
 	@PostMapping("/delete/{name}/{isdocdeleted}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<ResponseMessage> deleteFile(@PathVariable("name") String name,
-			@PathVariable("isdocdelted") boolean isdocdeleted) {
+			@PathVariable("isdocdeleted") boolean isdocdeleted) {
 		String msg;
 		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		try {
@@ -253,7 +257,7 @@ public class FileController {
 	 * Delete Files
 	 ***************************************/
 
-	@PostMapping("/deletefiles")
+	@PostMapping("/delete/files")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<ResponseMessage> deleteFiles(@RequestBody String[] files) {
 		String msg;
@@ -275,7 +279,7 @@ public class FileController {
 	 * Get Enveloppes
 	 ***************************************/
 
-	@GetMapping("/getEnveloppes")
+	@GetMapping("/enveloppes")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<?> GetEnveloppes() {
 		String msg;
@@ -294,24 +298,30 @@ public class FileController {
 	/************************************
 	 * Delete Enveloppe
 	 ***************************************/
-	@DeleteMapping("/deleteEnveloppe/{envId}")
+	@DeleteMapping("/delete/enveloppe/{envId}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<?> DeleteEnveloppe(@PathVariable("envId") Long envId) {
 		fileStorageService.deleteEnveloppe(envId);
-		return ResponseEntity.status(HttpStatus.OK).body("Deleted");
+		return ResponseEntity.status(HttpStatus.OK).body(envId);
 	}
 
 	/************************************
 	 * Get Documents
 	 ***************************************/
 
-	@GetMapping("/getDocuments")
+	@GetMapping("/documents/{id}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<?> GetDocuments(@RequestBody GetDocsByEnvidRequest request) {
-		System.out.println(request.getEnvId());
-		List<Document> enveloppes = fileStorageService.getDocumentsbyEnveloppeId(request.getEnvId());
+	public ResponseEntity<?> GetDocuments(@PathVariable("id") Long id ) {
+		List<Document> enveloppes = fileStorageService.getDocumentsbyEnveloppeId(id);
 		return ResponseEntity.status(HttpStatus.OK).body(enveloppes);
 
 	}
 
+	@GetMapping("/report")
+	public ResponseEntity<?> GenerateReport(@RequestBody ReportRequest request) throws JRException, FileNotFoundException {
+		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String response = fileStorageService.exportReport(request.getDataformat(),request.getFilename(),user.getId());
+		System.out.println(response);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
 }
