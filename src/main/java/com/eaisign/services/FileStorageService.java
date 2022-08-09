@@ -43,6 +43,8 @@ public interface FileStorageService {
 	 List<Document> getDocumentsbyEnveloppeId(Long id);
 	 void deleteDocument(Long id);
 
+	 String deleteDocumentsbyEnvid(Long envId);
+
 	 
 	 /*******************************************Files************************************/
 

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.eaisign.payload.request.*;
+import com.eaisign.repository.DocumentRepository;
 import com.eaisign.services.ReportService;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,8 @@ import com.eaisign.security.services.UserDetailsImpl;
 import com.eaisign.services.FileStorageService;
 import com.eaisign.services.implementations.UserServiceImp;
 
+import javax.print.Doc;
+
 @Controller
 
 @RequestMapping("/api/files")
@@ -57,21 +60,20 @@ public class FileController {
 
 	private FileStorageService fileStorageService;
 
+	private DocumentRepository documentRepository;
 	private UserRepository userRepository;
 
 	private UserServiceImp userServiceImp;
 
 
-
-	
-	public FileController(FileStorageService fileStorageService, UserRepository userRepository,
-			UserServiceImp userServiceImp) {
-		super();
+	public FileController(FileStorageService fileStorageService, DocumentRepository documentRepository, UserRepository userRepository, UserServiceImp userServiceImp) {
 		this.fileStorageService = fileStorageService;
+		this.documentRepository = documentRepository;
 		this.userRepository = userRepository;
 		this.userServiceImp = userServiceImp;
-		
 	}
+	
+
 
 	/***************************************
 	 * Upload File
@@ -302,7 +304,7 @@ public class FileController {
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<?> DeleteEnveloppe(@PathVariable("envId") Long envId) {
 		fileStorageService.deleteEnveloppe(envId);
-		return ResponseEntity.status(HttpStatus.OK).body(envId);
+		return ResponseEntity.status(HttpStatus.OK).body("Enveloppe Supprimé");
 	}
 
 	/************************************
@@ -316,7 +318,22 @@ public class FileController {
 		return ResponseEntity.status(HttpStatus.OK).body(enveloppes);
 
 	}
+	/*********************
+	 * Delete Documents by EnvID
+	 */
+	@DeleteMapping("/delete/documents/{envId}")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<?> DeleteDocumentsbyEnvId(@PathVariable("envId") Long envId){
+		List<Document> documents=fileStorageService.getDocumentsbyEnveloppeId(envId);
+		for(Document document:documents){
+			documentRepository.delete(document);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body("Documents Supprimés");
+	}
 
+	/***********************
+	* Génération des rapports
+	 ****************************/
 	@GetMapping("/report")
 	public ResponseEntity<?> GenerateReport(@RequestBody ReportRequest request) throws JRException, FileNotFoundException {
 		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
