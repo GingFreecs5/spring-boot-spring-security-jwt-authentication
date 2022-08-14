@@ -18,7 +18,7 @@
                     <imageExpression><![CDATA["eaiLogo.png"]]></imageExpression>
                 </image>
                 <textField>
-                    <reportElement mode="Opaque" x="175" y="25" width="690" height="40" forecolor="#1E2D75" uuid="59240107-4ca8-4ace-a477-e96eb9ef4931"/>
+                    <reportElement mode="Opaque" x="175" y="25" width="690" height="40" forecolor="#000000" uuid="59240107-4ca8-4ace-a477-e96eb9ef4931"/>
                     <textElement textAlignment="Center" verticalAlignment="Middle">
                         <font size="25" isBold="true" isItalic="true" isUnderline="true" isStrikeThrough="false"/>
                     </textElement>

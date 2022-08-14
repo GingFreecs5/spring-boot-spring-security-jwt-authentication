@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class ReportRequest {
-    private String filename;
-    private String dataformat;
+    private String status;
+    private String date;
+
 }

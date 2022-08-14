@@ -3,52 +3,34 @@ package com.eaisign.controllers;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import java.util.stream.Collectors;
 
 import com.eaisign.payload.request.*;
 import com.eaisign.repository.DocumentRepository;
-import com.eaisign.services.ReportService;
+import com.eaisign.services.implementations.ReportService;
 import net.sf.jasperreports.engine.JRException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
+import oracle.jdbc.proxy.annotation.Post;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.eaisign.exceptions.EnveloppeNotFoundException;
 import com.eaisign.exceptions.UserNotFoundException;
 import com.eaisign.models.Document;
 import com.eaisign.models.Enveloppe;
 import com.eaisign.models.Signataire;
 import com.eaisign.models.User;
 import com.eaisign.payload.message.FilesbyEnveloppeIdResponse;
-import com.eaisign.payload.message.ResponseFile;
 import com.eaisign.payload.message.ResponseMessage;
 import com.eaisign.payload.response.File64Response;
 import com.eaisign.repository.UserRepository;
 import com.eaisign.security.services.UserDetailsImpl;
 import com.eaisign.services.FileStorageService;
 import com.eaisign.services.implementations.UserServiceImp;
-
-import javax.print.Doc;
 
 @Controller
 
@@ -59,6 +41,7 @@ public class FileController {
 	static final String ROOT = "C:/Users/yassi/OneDrive/Documents/EAI_Docs/";
 
 	private FileStorageService fileStorageService;
+	private ReportService reportService;
 
 	private DocumentRepository documentRepository;
 	private UserRepository userRepository;
@@ -66,11 +49,12 @@ public class FileController {
 	private UserServiceImp userServiceImp;
 
 
-	public FileController(FileStorageService fileStorageService, DocumentRepository documentRepository, UserRepository userRepository, UserServiceImp userServiceImp) {
+	public FileController(FileStorageService fileStorageService,ReportService reportService, DocumentRepository documentRepository, UserRepository userRepository, UserServiceImp userServiceImp) {
 		this.fileStorageService = fileStorageService;
 		this.documentRepository = documentRepository;
 		this.userRepository = userRepository;
 		this.userServiceImp = userServiceImp;
+		this.reportService=reportService;
 	}
 	
 
@@ -304,7 +288,7 @@ public class FileController {
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<?> DeleteEnveloppe(@PathVariable("envId") Long envId) {
 		fileStorageService.deleteEnveloppe(envId);
-		return ResponseEntity.status(HttpStatus.OK).body("Enveloppe Supprimé");
+		return ResponseEntity.status(HttpStatus.OK).body(envId);
 	}
 
 	/************************************
@@ -334,11 +318,23 @@ public class FileController {
 	/***********************
 	* Génération des rapports
 	 ****************************/
-	@GetMapping("/report")
+	@PostMapping("/report")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
 	public ResponseEntity<?> GenerateReport(@RequestBody ReportRequest request) throws JRException, FileNotFoundException {
 		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		String response = fileStorageService.exportReport(request.getDataformat(),request.getFilename(),user.getId());
-		System.out.println(response);
+		System.out.println(request);
+		String response =reportService.exportReport(request.getStatus(),request.getDate(),user.getId());
+
 		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+	/***********************
+	 Envoi d'email
+	 ****************************/
+	@PostMapping("/sendMail")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<?> SendEmail(@ModelAttribute MailRequest request){
+		String response=reportService.sendEmail(request.getToEmail(), request.getSubject(), request.getBody(), ROOT+"Mail/",request.getFiles());
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+
 	}
 }

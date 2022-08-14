@@ -58,7 +58,5 @@ public interface FileStorageService {
 	 //Signataires
 	 Signataire saveSignataire(String email);
 
-	 String exportReport(String reportFormat,String nom,Long id
-	 ) throws FileNotFoundException, JRException;
 
 }
