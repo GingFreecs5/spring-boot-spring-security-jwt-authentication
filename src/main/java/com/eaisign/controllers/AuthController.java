@@ -50,12 +50,14 @@ public class AuthController {
 AuthenticationManager authenticationManager;
 
   
-  UserRepository userRepository;
+  UserRepository userRepository;
+
   RoleRepository roleRepository;
 
   PasswordEncoder encoder;
 
-  JwtUtils jwtUtils;
+  JwtUtils jwtUtils;
+
   FileStorageService fileStorageService;
   public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
 		RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils,
@@ -151,7 +153,8 @@ AuthenticationManager authenticationManager;
   }
   @PostMapping("/createfolder/{id}")
 	public ResponseEntity<ResponseMessage> createFolder(@PathVariable("id") Long id) {
-		String msg = fileStorageService.CreateDirectory(ROOT+id);
+        fileStorageService.CreateDirectory(ROOT+id+"/Enveloppes");
+		String msg = fileStorageService.CreateDirectory(ROOT+id+"/Rapports");
 		return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(msg));
 	}
 

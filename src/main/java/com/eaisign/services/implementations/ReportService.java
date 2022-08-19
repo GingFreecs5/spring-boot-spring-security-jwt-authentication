@@ -4,6 +4,7 @@ import com.eaisign.exceptions.UserNotFoundException;
 import com.eaisign.models.Document;
 import com.eaisign.models.Enveloppe;
 import com.eaisign.models.User;
+import com.eaisign.payload.request.DocumentReport;
 import com.eaisign.repository.DocumentRepository;
 import com.eaisign.repository.EnveloppeRepository;
 import com.eaisign.repository.UserRepository;
@@ -48,28 +49,23 @@ public class ReportService {
 		this.enveloppeRepository = enveloppeRepository;
 	}
 
-	public String exportReport( String status,String date, Long id) throws FileNotFoundException, JRException {
+	public JasperPrint  exportReportEnveloppes( String status,String date, Long id,String path) throws FileNotFoundException, JRException {
 
 		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
-		System.out.println(status);
 		List<Enveloppe> enveloppes_=new ArrayList<Enveloppe>();
+
 		if(status.equals("Terminé")) {
 			enveloppes_ = enveloppeRepository.findByStatusAndUser(status,user);
 
 		}else if (status.equals("All")) {
 			 enveloppes_ = enveloppeRepository.findByUser(user);
-
-
-		}else {
-			enveloppes_=null;
 		}
+
 		List<Enveloppe> enveloppes=new ArrayList<Enveloppe>();
 		if(date.equals("Day")) {
 			Date yesterday=new Date(System.currentTimeMillis()-24*60*60*1000);
-			System.out.println(yesterday);
 			for(Enveloppe enveloppe:enveloppes_){
 				if(enveloppe.getDerniereModification().after(yesterday)){
-					System.out.println(enveloppe.getDerniereModification());
 					enveloppes.add(enveloppe);
 				}
 			}
@@ -77,7 +73,6 @@ public class ReportService {
 			Date lastweek=	new Date(System.currentTimeMillis()-7*24*60*60*1000);
 			for(Enveloppe enveloppe:enveloppes_){
 				if(enveloppe.getDerniereModification().after(lastweek)){
-					System.out.println(enveloppe.getDerniereModification());
 					enveloppes.add(enveloppe);
 				}
 			}
@@ -86,7 +81,6 @@ public class ReportService {
 			Date lastmonth=	new Date(System.currentTimeMillis()-24*24*60*60*1000);
 			for(Enveloppe enveloppe:enveloppes_){
 				if(enveloppe.getDerniereModification().after(lastmonth)){
-
 					enveloppes.add(enveloppe);
 				}
 			}
@@ -95,7 +89,7 @@ public class ReportService {
 		
 		List<User> users = new ArrayList<>();
 		users.add(user);
-		String path = "D:\\JasperDocuments\\";
+
 		File fileDocuments = ResourceUtils.getFile("classpath:UserDocs.jrxml");
 		File fileUser = ResourceUtils.getFile("classpath:user.jrxml");
 		File fileAdress = ResourceUtils.getFile("classpath:UserDocsSubreport.jrxml");
@@ -103,7 +97,6 @@ public class ReportService {
 		JasperReport jasperReportUser = JasperCompileManager.compileReport(fileUser.getAbsolutePath());
 		JRBeanCollectionDataSource dataSourceUser = new JRBeanCollectionDataSource(users);
 		Map<String, Object> parameters = new HashMap<>();
-		parameters.put("createdBy", "ME");
 		JasperPrint jasperPrintUser = JasperFillManager.fillReport(jasperReportUser, parameters, dataSourceUser);
 
 		JasperReport jasperReportDocuments = JasperCompileManager.compileReport(fileDocuments.getAbsolutePath());
@@ -114,17 +107,80 @@ public class ReportService {
 		parametersDocs.put("nom", user.getUsername());
 		parametersDocs.put("prenom", user.getPrenom());
 		parametersDocs.put("subreportParameter", jasperReportAdress);
-		;
 		JasperPrint jasperPrintDocuments = JasperFillManager.fillReport(jasperReportDocuments, parametersDocs,
 				dataSourceDocs);
-		String userFilename = user.getPieceJusticatif() + "User";
-		String documentsFilename = user.getPieceJusticatif() + "Documents";
-		userFilename = userFilename + ".pdf";
-		documentsFilename = documentsFilename + ".pdf";
-		JasperExportManager.exportReportToPdfFile(jasperPrintUser, path + userFilename);
-		JasperExportManager.exportReportToPdfFile(jasperPrintDocuments, path + documentsFilename);
-		return "Rapport généré";
+		JasperExportManager.exportReportToPdfFile(jasperPrintDocuments,path);
+		return jasperPrintDocuments;
 	}
+	public JasperPrint  exportReportDocuments( String status,String date, Long id,String path) throws FileNotFoundException, JRException {
+
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
+		List<Enveloppe> enveloppes_=new ArrayList<Enveloppe>();
+
+		if(status.equals("Terminé")) {
+			enveloppes_ = enveloppeRepository.findByStatusAndUser(status,user);
+
+		}else if (status.equals("All")) {
+			enveloppes_ = enveloppeRepository.findByUser(user);
+		}
+
+		List<Enveloppe> enveloppes=new ArrayList<Enveloppe>();
+		if(date.equals("Day")) {
+			Date yesterday=new Date(System.currentTimeMillis()-24*60*60*1000);
+			for(Enveloppe enveloppe:enveloppes_){
+				if(enveloppe.getDerniereModification().after(yesterday)){
+					enveloppes.add(enveloppe);
+				}
+			}
+		}else if(date.equals("Week")) {
+			Date lastweek=	new Date(System.currentTimeMillis()-7*24*60*60*1000);
+			for(Enveloppe enveloppe:enveloppes_){
+				if(enveloppe.getDerniereModification().after(lastweek)){
+					enveloppes.add(enveloppe);
+				}
+			}
+
+		}else if(date.equals("Month")) {
+			Date lastmonth=	new Date(System.currentTimeMillis()-24*24*60*60*1000);
+			for(Enveloppe enveloppe:enveloppes_){
+				if(enveloppe.getDerniereModification().after(lastmonth)){
+					enveloppes.add(enveloppe);
+				}
+			}
+		}
+		List<DocumentReport> documents=new ArrayList<>();
+		for(Enveloppe enveloppe:enveloppes){
+			List<Document> documents_=enveloppe.getDocuments();
+			for(Document document:documents_){
+				DocumentReport documentReport = new DocumentReport();
+				documentReport.setStatus(enveloppe.getStatus());
+				documentReport.setDateAjout(enveloppe.getDateAjout());
+				documentReport.setDateDernierModification(enveloppe.getDerniereModification());
+				documentReport.setNom(document.getNom());
+				documentReport.setSignataire(document.getSignataire().getEmail());
+				documents.add(documentReport);
+			}
+		}
+		List<User> users = new ArrayList<>();
+		users.add(user);
+		File fileDocuments = ResourceUtils.getFile("classpath:UserDocuments.jrxml");
+		File fileUser = ResourceUtils.getFile("classpath:user.jrxml");
+		JasperReport jasperReportUser = JasperCompileManager.compileReport(fileUser.getAbsolutePath());
+		JRBeanCollectionDataSource dataSourceUser = new JRBeanCollectionDataSource(users);
+		Map<String, Object> parameters = new HashMap<>();
+		JasperPrint jasperPrintUser = JasperFillManager.fillReport(jasperReportUser, parameters, dataSourceUser);
+		JasperReport jasperReportDocuments = JasperCompileManager.compileReport(fileDocuments.getAbsolutePath());
+		JRBeanCollectionDataSource CollectionBeanParam = new JRBeanCollectionDataSource(documents);
+		Map<String, Object> parametersDocs = new HashMap<>();
+		parametersDocs.put("nom", user.getUsername());
+		parametersDocs.put("prenom", user.getPrenom());
+		parametersDocs.put("CollectionBeanParam",CollectionBeanParam);
+		JasperPrint jasperPrintDocuments = JasperFillManager.fillReport(jasperReportDocuments, parametersDocs,new JREmptyDataSource());
+		JasperExportManager.exportReportToPdfFile(jasperPrintDocuments,path);
+
+		return jasperPrintDocuments;
+	}
+
 
 	public String sendEmail(String toEmail, String subject, String body, String root, MultipartFile[] multipartFiles) {
 		// SimpleMailMessage message=new SimpleMailMessage();
@@ -152,12 +208,6 @@ public class ReportService {
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
-
-//        message.setFrom("yassinakkab@gmail.com");
-//        message.setTo(toEmail);
-//        message.setText(body);
-//        message.setSubject(subject);
-
 		javaMailSender.send(message);
 		return "Email Sent";
 

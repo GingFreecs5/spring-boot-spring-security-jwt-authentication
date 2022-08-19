@@ -10,8 +10,13 @@ import com.eaisign.payload.request.*;
 import com.eaisign.repository.DocumentRepository;
 import com.eaisign.services.implementations.ReportService;
 import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import oracle.jdbc.proxy.annotation.Post;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,6 +44,9 @@ import com.eaisign.services.implementations.UserServiceImp;
 public class FileController {
 
 	static final String ROOT = "C:/Users/yassi/OneDrive/Documents/EAI_Docs/";
+	static final String ENVROOT= "Enveloppes/";
+	static final String REPORTROOT= "Rapports/";
+
 
 	private FileStorageService fileStorageService;
 	private ReportService reportService;
@@ -70,7 +78,7 @@ public class FileController {
 		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 		File64Response file64Response = new File64Response("", "");
-		String file64 = fileStorageService.uploadFile(file, ROOT + user.getId());
+		String file64 = fileStorageService.uploadFile(file, ROOT + user.getId()+"/"+ENVROOT);
 		file64Response.setName(file.getOriginalFilename());
 		file64Response.setPdfB64(file64);
 		message = "Uploaded the file successfully: " + file.getOriginalFilename();
@@ -86,7 +94,7 @@ public class FileController {
 	public ResponseEntity<List<FilesbyEnveloppeIdResponse>> getFilesbyEnveloppeId(@PathVariable("envId") Long envId) {
 		List<FilesbyEnveloppeIdResponse> filesbyEnveloppeIdResponses = new ArrayList<FilesbyEnveloppeIdResponse>();
 		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		String path = ROOT + user.getId() + "/" + envId;
+		String path = ROOT + user.getId() + "/" +ENVROOT+ envId;
 		System.out.println(path);
 		File[] files = fileStorageService.getFilesbyEnvid(path);
 		if (files == null) {
@@ -186,7 +194,7 @@ public class FileController {
 	public ResponseEntity<?> SaveDocuments(@RequestBody NewDocRequest request) {
 		boolean fileMoved = false;
 		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		fileStorageService.CreateDirectory(ROOT + user.getId() + "/" + request.getIdEnveloppe());
+		fileStorageService.CreateDirectory(ROOT + user.getId() + "/"+ENVROOT + request.getIdEnveloppe());
 
 		String message = "Files saved";
 		Enveloppe enveloppe = fileStorageService.getEnveloppe(request.getIdEnveloppe());
@@ -195,8 +203,8 @@ public class FileController {
 		for (String file : request.getFiles()) {
 			Document document = fileStorageService.saveDocument(file, enveloppe, request.getCanalUtilise(), signataire);
 			if(request.isCopyFiles()) {
-			fileMoved = fileStorageService.copyFile(ROOT + user.getId() + "/" + file,
-					ROOT + user.getId() + "/" + request.getIdEnveloppe() + "/" + file);
+			fileMoved = fileStorageService.copyFile(ROOT + user.getId() + "/" +ENVROOT+ file,
+					ROOT + user.getId() + "/"  +ENVROOT+ request.getIdEnveloppe()+ "/" + file);
 			if (!fileMoved)
 				break;
 			}else {
@@ -227,7 +235,7 @@ public class FileController {
 		String msg;
 		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		try {
-			msg = fileStorageService.deleteFile(name, ROOT + user.getId());
+			msg = fileStorageService.deleteFile(name, ROOT + user.getId()+"/"+ENVROOT);
 			if (isdocdeleted) {
 				fileStorageService.deleteDocument(null);
 			}
@@ -251,7 +259,7 @@ public class FileController {
 
 		try {
 			for (String filename : files) {
-				fileStorageService.deleteFile(filename, ROOT + user.getId());
+				fileStorageService.deleteFile(filename, ROOT + user.getId()+"/"+ENVROOT);
 			}
 			msg = "files Deleted";
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(msg));
@@ -318,14 +326,40 @@ public class FileController {
 	/***********************
 	* Génération des rapports
 	 ****************************/
-	@PostMapping("/report")
+	@PostMapping("/exportEnveloppes")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<?> GenerateReport(@RequestBody ReportRequest request) throws JRException, FileNotFoundException {
+	public ResponseEntity<?> GenerateReportEnveloppes(@RequestBody ReportRequest request) throws JRException, FileNotFoundException {
 		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		System.out.println(request);
-		String response =reportService.exportReport(request.getStatus(),request.getDate(),user.getId());
+		fileStorageService.CreateDirectory(ROOT + user.getId() + "/"+REPORTROOT);
+		String reportName=request.getReportName();
+		reportName=reportName.replaceAll("\\s+","");
+		HttpHeaders headers = new HttpHeaders();
+		//set the PDF format
+		headers.setContentType(MediaType.APPLICATION_PDF);
 
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		headers.setContentDispositionFormData("filename", reportName+".pdf");
+		String path=ROOT + user.getId() + "/"+REPORTROOT+"/" +reportName +".pdf";
+		JasperPrint response =reportService.exportReportEnveloppes(request.getStatus(),request.getDate(),user.getId(),path);
+
+		return new ResponseEntity<byte[]>(JasperExportManager.exportReportToPdf(response),headers,HttpStatus.OK);
+	}
+
+	@PostMapping("/exportDocuments")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<byte[]> GenerateReportDocuments(@RequestBody ReportRequest request) throws JRException, FileNotFoundException {
+		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		fileStorageService.CreateDirectory(ROOT + user.getId() + "/"+REPORTROOT);
+		String reportName=request.getReportName();
+		reportName=reportName.replaceAll("\\s+","");
+		HttpHeaders headers = new HttpHeaders();
+		String path=ROOT + user.getId() + "/"+REPORTROOT+"/" +reportName +".pdf";
+
+		//set the PDF format
+		headers.setContentType(MediaType.APPLICATION_PDF);
+		headers.setContentDispositionFormData("filename", reportName+".pdf");
+		JasperPrint response =reportService.exportReportDocuments(request.getStatus(),request.getDate(),user.getId(),path);
+
+		return new ResponseEntity<byte[]>(JasperExportManager.exportReportToPdf(response),headers,HttpStatus.OK);
 	}
 	/***********************
 	 Envoi d'email

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.19.1.final using JasperReports Library version 6.19.1-867c00bf88cd4d784d404379d6c05e1b419e8a4c  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="UserDocs" pageWidth="1000" pageHeight="900" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1a30bf8c-5532-453b-8b9c-a1b01e4c080c">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="UserDocs" pageWidth="1000" pageHeight="1300" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="1a30bf8c-5532-453b-8b9c-a1b01e4c080c">
     <parameter name="subreportParameter" class="net.sf.jasperreports.engine.JasperReport"/>
     <parameter name="nom" class="java.lang.String"/>
-    <parameter name="prenom" class="java.lang.String" />
+    <parameter name="prenom" class="java.lang.String"/>
     <field name="id" class="java.lang.Long"/>
     <field name="nom" class="java.lang.String"/>
     <field name="status" class="java.lang.String"/>
@@ -12,17 +12,47 @@
     <field name="documents" class="java.util.List"/>
     <group name="Group1" isReprintHeaderOnEachPage="true">
         <groupHeader>
-            <band height="117">
+            <band height="125">
                 <image>
-                    <reportElement x="25" y="15" width="99" height="70" uuid="f74c7b17-5587-45cf-bb04-0072123d5307"/>
+                    <reportElement x="810" y="15" width="119" height="85" uuid="f74c7b17-5587-45cf-bb04-0072123d5307"/>
                     <imageExpression><![CDATA["eaiLogo.png"]]></imageExpression>
                 </image>
-                <textField>
-                    <reportElement mode="Opaque" x="175" y="25" width="690" height="40" forecolor="#000000" uuid="59240107-4ca8-4ace-a477-e96eb9ef4931"/>
-                    <textElement textAlignment="Center" verticalAlignment="Middle">
-                        <font size="25" isBold="true" isItalic="true" isUnderline="true" isStrikeThrough="false"/>
+                <textField evaluationTime="Column">
+                    <reportElement mode="Opaque" x="30" y="40" width="220" height="30" forecolor="#000000" uuid="59240107-4ca8-4ace-a477-e96eb9ef4931"/>
+                    <textElement textAlignment="Left" verticalAlignment="Middle">
+                        <font size="19" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
                     </textElement>
-                    <textFieldExpression><![CDATA["Les Enveloppes et les documents de " + $P{nom} +" " +$P{prenom}]]></textFieldExpression>
+                    <textFieldExpression><![CDATA["Eurafric Information"]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="30" y="10" width="220" height="30" uuid="1a52e0b3-f09c-4a1e-96ef-1afd28ea8b83"/>
+                    <textElement verticalAlignment="Middle">
+                        <font size="19"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["BANK OF AFRICA"]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="30" y="70" width="460" height="30" uuid="b99c5986-ff75-4a2a-b0f9-c093f42d0f14"/>
+                    <textElement verticalAlignment="Middle">
+                        <font size="19"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["F9QP+RC4, Bouskoura, Casablanca-Settat, Maroc"]]></textFieldExpression>
+                </textField>
+                <line>
+                    <reportElement x="30" y="110" width="900" height="1" forecolor="#4A4646" uuid="78d34d05-51f7-4950-b6be-f341396dec3e"/>
+                </line>
+            </band>
+        </groupHeader>
+    </group>
+    <group name="Group2">
+        <groupHeader>
+            <band height="77">
+                <textField>
+                    <reportElement mode="Opaque" x="260" y="3" width="410" height="41" backcolor="#517F91" uuid="3e3a0cd3-d8ec-45ae-869c-f7f4fc2aa583"/>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font size="25"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["Les Enveloppes de " + $P{nom} +" " +$P{prenom}]]></textFieldExpression>
                 </textField>
             </band>
         </groupHeader>

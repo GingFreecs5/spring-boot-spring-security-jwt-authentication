@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.19.1.final using JasperReports Library version 6.19.1-867c00bf88cd4d784d404379d6c05e1b419e8a4c  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="UserDocuments" pageWidth="1240" pageHeight="1500" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="88b565b2-f663-412c-98b0-edddf3b3a924">
+    <property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+    <style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
+        <box>
+            <pen lineWidth="0.5" lineColor="#000000"/>
+            <topPen lineWidth="0.5" lineColor="#000000"/>
+            <leftPen lineWidth="0.5" lineColor="#000000"/>
+            <bottomPen lineWidth="0.5" lineColor="#000000"/>
+            <rightPen lineWidth="0.5" lineColor="#000000"/>
+        </box>
+    </style>
+    <style name="Table_CH" mode="Opaque" backcolor="#BFE1FF">
+        <box>
+            <pen lineWidth="0.5" lineColor="#000000"/>
+            <topPen lineWidth="0.5" lineColor="#000000"/>
+            <leftPen lineWidth="0.5" lineColor="#000000"/>
+            <bottomPen lineWidth="0.5" lineColor="#000000"/>
+            <rightPen lineWidth="0.5" lineColor="#000000"/>
+        </box>
+    </style>
+    <style name="Table_TD" mode="Opaque" backcolor="#FFFFFF">
+        <box>
+            <pen lineWidth="0.5" lineColor="#000000"/>
+            <topPen lineWidth="0.5" lineColor="#000000"/>
+            <leftPen lineWidth="0.5" lineColor="#000000"/>
+            <bottomPen lineWidth="0.5" lineColor="#000000"/>
+            <rightPen lineWidth="0.5" lineColor="#000000"/>
+        </box>
+    </style>
+    <subDataset name="Dataset1" uuid="b5b73a7b-b9e9-4462-a0a4-1b6f0db2b303">
+        <queryString>
+            <![CDATA[]]>
+        </queryString>
+        <field name="nom" class="java.lang.String"/>
+        <field name="signataire" class="java.lang.String"/>
+        <field name="status" class="java.lang.String"/>
+        <field name="dateAjout" class="java.util.Date"/>
+        <field name="dateDernierModification" class="java.util.Date"/>
+    </subDataset>
+    <parameter name="nom" class="java.lang.String"/>
+    <parameter name="prenom" class="java.lang.String"/>
+    <parameter name="CollectionBeanParam" class="net.sf.jasperreports.engine.data.JRBeanCollectionDataSource"/>
+    <queryString>
+        <![CDATA[]]>
+    </queryString>
+    <field name="nom" class="java.lang.String"/>
+    <field name="signataire" class="java.lang.String"/>
+    <field name="status" class="java.lang.String"/>
+    <field name="dateAjout" class="java.util.Date"/>
+    <field name="dateDernierModification" class="java.util.Date"/>
+    <group name="Group1" isReprintHeaderOnEachPage="true">
+        <groupHeader>
+            <band height="128">
+                <image>
+                    <reportElement x="949" y="10" width="119" height="85" uuid="f74c7b17-5587-45cf-bb04-0072123d5307"/>
+                    <imageExpression><![CDATA["eaiLogo.png"]]></imageExpression>
+                </image>
+                <textField evaluationTime="Column">
+                    <reportElement mode="Opaque" x="30" y="40" width="220" height="30" forecolor="#000000" uuid="59240107-4ca8-4ace-a477-e96eb9ef4931"/>
+                    <textElement textAlignment="Left" verticalAlignment="Middle">
+                        <font size="19" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["Eurafric Information"]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="30" y="10" width="220" height="30" uuid="1a52e0b3-f09c-4a1e-96ef-1afd28ea8b83"/>
+                    <textElement verticalAlignment="Middle">
+                        <font size="19"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["BANK OF AFRICA"]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="30" y="70" width="460" height="30" uuid="b99c5986-ff75-4a2a-b0f9-c093f42d0f14"/>
+                    <textElement verticalAlignment="Middle">
+                        <font size="19"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["F9QP+RC4, Bouskoura, Casablanca-Settat, Maroc"]]></textFieldExpression>
+                </textField>
+                <line>
+                    <reportElement x="30" y="110" width="900" height="1" forecolor="#4A4646" uuid="78d34d05-51f7-4950-b6be-f341396dec3e"/>
+                </line>
+            </band>
+        </groupHeader>
+    </group>
+    <group name="Group2">
+        <groupHeader>
+            <band height="70">
+                <textField>
+                    <reportElement mode="Opaque" x="260" y="5" width="570" height="41" backcolor="#517F91" uuid="3e3a0cd3-d8ec-45ae-869c-f7f4fc2aa583"/>
+                    <textElement textAlignment="Center" verticalAlignment="Middle">
+                        <font size="25"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["Les documents de " + $P{nom} +" " +$P{prenom}]]></textFieldExpression>
+                </textField>
+            </band>
+        </groupHeader>
+    </group>
+    <background>
+        <band splitType="Stretch"/>
+    </background>
+    <detail>
+        <band height="95" splitType="Stretch">
+            <componentElement>
+                <reportElement x="-11" y="20" width="1220" height="70" uuid="38c62373-b5e7-4622-a1f1-b120af6c9083">
+                    <property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+                    <property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
+                    <property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
+                    <property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
+                </reportElement>
+                <jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+                    <datasetRun subDataset="Dataset1" uuid="22a0d7ba-2dbf-49ab-9aec-a84e67e929c0">
+                        <dataSourceExpression><![CDATA[$P{CollectionBeanParam}]]></dataSourceExpression>
+                    </datasetRun>
+                    <jr:column width="290" uuid="3325c5e5-6aad-4180-a327-7ce8ab2f131b">
+                        <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
+                        <jr:tableHeader style="Table_TH" height="30" rowSpan="1">
+                            <textField>
+                                <reportElement x="0" y="0" width="290" height="30" uuid="1c410bb1-d5f6-4071-8adc-613db03da459"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font size="16"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA["Nom"]]></textFieldExpression>
+                            </textField>
+                        </jr:tableHeader>
+                        <jr:detailCell style="Table_TD" height="30">
+                            <textField>
+                                <reportElement x="0" y="0" width="290" height="30" uuid="f39d71a5-f952-410e-8793-cbf87e891002"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font size="14"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA[$F{nom}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                    <jr:column width="260" uuid="dddea6de-8a1f-445e-a43d-878ddac17968">
+                        <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
+                        <jr:tableHeader style="Table_TH" height="30" rowSpan="1">
+                            <textField>
+                                <reportElement x="0" y="0" width="260" height="30" uuid="772b1748-2e7c-48e9-9416-3c53ba860b76"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font size="16"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA["Signataire"]]></textFieldExpression>
+                            </textField>
+                        </jr:tableHeader>
+                        <jr:detailCell style="Table_TD" height="30">
+                            <textField>
+                                <reportElement x="0" y="0" width="260" height="30" uuid="13fd75f0-a664-4c3f-9ef2-8df48085e52a">
+                                    <printWhenExpression><![CDATA[$F{signataire} != null]]></printWhenExpression>
+                                </reportElement>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font size="14"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA[$F{signataire}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                    <jr:column width="150" uuid="f4d2556a-12c1-4bee-bea1-f96c183912b4">
+                        <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+                        <jr:tableHeader style="Table_TH" height="30" rowSpan="1">
+                            <textField>
+                                <reportElement x="0" y="0" width="150" height="30" uuid="2e9bd24f-6fa3-43ac-92d9-e8f43664d9e5"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font size="16"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA["Status"]]></textFieldExpression>
+                            </textField>
+                        </jr:tableHeader>
+                        <jr:detailCell style="Table_TD" height="30">
+                            <textField>
+                                <reportElement x="0" y="0" width="150" height="30" uuid="679d5717-990c-4014-ae2f-69b6ffd5663e"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font size="14"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA[$F{status}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                    <jr:column width="250" uuid="7250db8a-a127-437c-a975-5a86cf3e9f26">
+                        <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
+                        <jr:tableHeader style="Table_TH" height="30" rowSpan="1">
+                            <textField>
+                                <reportElement x="0" y="0" width="250" height="30" uuid="a5d1768b-f8c7-46a6-8cf2-bbe8f8e7a597"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font size="16"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA["Date d'ajout"]]></textFieldExpression>
+                            </textField>
+                        </jr:tableHeader>
+                        <jr:detailCell style="Table_TD" height="30">
+                            <textField>
+                                <reportElement x="0" y="0" width="250" height="30" uuid="1ada7cf1-8295-490b-a0d7-8c337bfb0242"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font size="14"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA[$F{dateAjout}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                    <jr:column width="270" uuid="0c90d962-30ca-4c44-a2dc-260ea0d7f76c">
+                        <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
+                        <jr:tableHeader style="Table_TH" height="30" rowSpan="1">
+                            <textField>
+                                <reportElement x="0" y="0" width="270" height="30" uuid="a4f1e060-2ddf-4335-b4a5-1a058e4f19a8"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font size="16"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA["Date de derniére modification"]]></textFieldExpression>
+                            </textField>
+                        </jr:tableHeader>
+                        <jr:detailCell style="Table_TD" height="30">
+                            <textField>
+                                <reportElement x="0" y="0" width="270" height="30" uuid="199f6935-9932-44a1-9fb0-155f2164f0ef"/>
+                                <textElement textAlignment="Center" verticalAlignment="Middle">
+                                    <font size="14"/>
+                                </textElement>
+                                <textFieldExpression><![CDATA[$F{dateDernierModification}]]></textFieldExpression>
+                            </textField>
+                        </jr:detailCell>
+                    </jr:column>
+                </jr:table>
+            </componentElement>
+        </band>
+    </detail>
+</jasperReport>
