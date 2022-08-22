@@ -1,9 +1,12 @@
 package com.eaisign.controllers;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import com.eaisign.payload.request.*;
@@ -36,6 +39,9 @@ import com.eaisign.repository.UserRepository;
 import com.eaisign.security.services.UserDetailsImpl;
 import com.eaisign.services.FileStorageService;
 import com.eaisign.services.implementations.UserServiceImp;
+
+import javax.activation.DataSource;
+import javax.mail.util.ByteArrayDataSource;
 
 @Controller
 
@@ -324,11 +330,11 @@ public class FileController {
 	}
 
 	/***********************
-	* Génération des rapports
+	* Génération des rapports pour les enveloppes
 	 ****************************/
-	@PostMapping("/exportEnveloppes")
+	@PostMapping("/exportReport")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<?> GenerateReportEnveloppes(@RequestBody ReportRequest request) throws JRException, FileNotFoundException {
+	public ResponseEntity<?> GenerateEnvelopeReport(@RequestBody ReportRequest request) throws JRException, FileNotFoundException {
 		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		fileStorageService.CreateDirectory(ROOT + user.getId() + "/"+REPORTROOT);
 		String reportName=request.getReportName();
@@ -339,27 +345,65 @@ public class FileController {
 
 		headers.setContentDispositionFormData("filename", reportName+".pdf");
 		String path=ROOT + user.getId() + "/"+REPORTROOT+"/" +reportName +".pdf";
-		JasperPrint response =reportService.exportReportEnveloppes(request.getStatus(),request.getDate(),user.getId(),path);
+		List<Enveloppe> enveloppes_=new ArrayList<Enveloppe>();
+		if(request.getStatus().equals("Terminé")) {
+			enveloppes_=fileStorageService.getEnveloppesByStatus(user.getId(),request.getStatus());
+		}else if (request.getStatus().equals("All")) {
+			enveloppes_ =fileStorageService.getAllEnveloppes(user.getId());
+		}
+		List<Enveloppe> enveloppes=new ArrayList<Enveloppe>();
+		if(request.getDate().equals("Day")) {
+			Date yesterday=new Date(System.currentTimeMillis()-24*60*60*1000);
+			for(Enveloppe enveloppe:enveloppes_){
+				if(enveloppe.getDerniereModification().after(yesterday)){
+					enveloppes.add(enveloppe);
+				}
+			}
+		}else if(request.getDate().equals("Week")) {
+			Date lastweek=	new Date(System.currentTimeMillis()-7*24*60*60*1000);
+			for(Enveloppe enveloppe:enveloppes_){
+				if(enveloppe.getDerniereModification().after(lastweek)){
+					enveloppes.add(enveloppe);
+				}
+			}
 
-		return new ResponseEntity<byte[]>(JasperExportManager.exportReportToPdf(response),headers,HttpStatus.OK);
+		}else if(request.getDate().equals("Month")) {
+			Date lastmonth=	new Date(System.currentTimeMillis()-24*24*60*60*1000);
+			for(Enveloppe enveloppe:enveloppes_){
+				if(enveloppe.getDerniereModification().after(lastmonth)){
+					enveloppes.add(enveloppe);
+				}
+			}
+		}
+		if(enveloppes.isEmpty()){
+			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Empty Data");
+		}else{
+			if(request.getType().equals("Enveloppe")) {
+				JasperPrint response =reportService.exportReportEnveloppes(user.getId(),enveloppes);
+				return new ResponseEntity<byte[]>(JasperExportManager.exportReportToPdf(response),headers,HttpStatus.OK);
+			}else {
+				JasperPrint response =reportService.exportReportDocuments(user.getId(),enveloppes);
+				return new ResponseEntity<byte[]>(JasperExportManager.exportReportToPdf(response),headers,HttpStatus.OK);
+			}
+
+		}
 	}
-
-	@PostMapping("/exportDocuments")
+	@PostMapping("/exportUserReport")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<byte[]> GenerateReportDocuments(@RequestBody ReportRequest request) throws JRException, FileNotFoundException {
+	public ResponseEntity<?> GenerateUserReport() throws JRException, FileNotFoundException {
 		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		fileStorageService.CreateDirectory(ROOT + user.getId() + "/"+REPORTROOT);
-		String reportName=request.getReportName();
-		reportName=reportName.replaceAll("\\s+","");
-		HttpHeaders headers = new HttpHeaders();
-		String path=ROOT + user.getId() + "/"+REPORTROOT+"/" +reportName +".pdf";
 
+
+		HttpHeaders headers = new HttpHeaders();
 		//set the PDF format
 		headers.setContentType(MediaType.APPLICATION_PDF);
-		headers.setContentDispositionFormData("filename", reportName+".pdf");
-		JasperPrint response =reportService.exportReportDocuments(request.getStatus(),request.getDate(),user.getId(),path);
 
+		headers.setContentDispositionFormData("filename", "UserReport"+".pdf");
+		String path=ROOT + user.getId() + "/"+REPORTROOT+"/" +"UserReport" +".pdf";
+		JasperPrint response =reportService.exportUserReport(user.getId());
 		return new ResponseEntity<byte[]>(JasperExportManager.exportReportToPdf(response),headers,HttpStatus.OK);
+
 	}
 	/***********************
 	 Envoi d'email
@@ -371,4 +415,80 @@ public class FileController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 
 	}
+
+
+	@RequestMapping(value = "/sendReports/{email}", produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<?> SendReportsPerEmail(@RequestBody ReportEmailRequest request,@PathVariable("email") String email) throws JRException, FileNotFoundException {
+		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+		HashMap<String,DataSource> dataSources=new HashMap<>();
+		for(ReportRequest report:request.getReports()){
+			if(report.getType().equals("User")){
+				JasperPrint jasperPrint =reportService.exportUserReport(user.getId());
+				ByteArrayOutputStream baos =new ByteArrayOutputStream();
+				JasperExportManager.exportReportToPdfStream(jasperPrint,baos);
+				DataSource attachement= new ByteArrayDataSource(baos.toByteArray(), "application/pdf");
+				dataSources.put(report.getReportName(),attachement);
+			}else if(report.getType().equals("Documents") || report.getType().equals("Enveloppes")){
+				List<Enveloppe> enveloppes_=new ArrayList<Enveloppe>();
+				if(report.getStatus().equals("Terminé")) {
+					enveloppes_=fileStorageService.getEnveloppesByStatus(user.getId(),report.getStatus());
+				}else if (report.getStatus().equals("All")) {
+					enveloppes_ =fileStorageService.getAllEnveloppes(user.getId());
+				}
+				List<Enveloppe> enveloppes=new ArrayList<Enveloppe>();
+				if(report.getDate().equals("Day")) {
+					Date yesterday=new Date(System.currentTimeMillis()-24*60*60*1000);
+					for(Enveloppe enveloppe:enveloppes_){
+						if(enveloppe.getDerniereModification().after(yesterday)){
+							enveloppes.add(enveloppe);
+						}
+					}
+				}else if(report.getDate().equals("Week")) {
+					Date lastweek=	new Date(System.currentTimeMillis()-7*24*60*60*1000);
+					for(Enveloppe enveloppe:enveloppes_){
+						if(enveloppe.getDerniereModification().after(lastweek)){
+							enveloppes.add(enveloppe);
+						}
+					}
+
+				}else if(report.getDate().equals("Month")) {
+					Date lastmonth=	new Date(System.currentTimeMillis()-24*24*60*60*1000);
+					for(Enveloppe enveloppe:enveloppes_){
+						if(enveloppe.getDerniereModification().after(lastmonth)){
+							enveloppes.add(enveloppe);
+						}
+					}
+				}
+
+				if(enveloppes.isEmpty()){
+
+				}else{
+					if(report.getType().equals("Enveloppes")) {
+						JasperPrint jasperPrint =reportService.exportReportEnveloppes(user.getId(),enveloppes);
+						ByteArrayOutputStream baos =new ByteArrayOutputStream();
+						JasperExportManager.exportReportToPdfStream(jasperPrint,baos);
+						DataSource attachement= new ByteArrayDataSource(baos.toByteArray(), "application/pdf");
+						dataSources.put(report.getReportName(),attachement);
+					}else if(report.getType().equals("Documents")) {
+						JasperPrint jasperPrint =reportService.exportReportDocuments(user.getId(),enveloppes);
+						ByteArrayOutputStream baos =new ByteArrayOutputStream();
+						JasperExportManager.exportReportToPdfStream(jasperPrint,baos);
+						DataSource attachement= new ByteArrayDataSource(baos.toByteArray(), "application/pdf");
+						dataSources.put(report.getReportName(),attachement);
+					}else{
+						return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Error dans le serveur");
+					}
+
+				}
+			}else{
+				return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Error dans le serveur");
+			}
+		}
+		String response=reportService.sendReportstoEmail(email,"EaiSign - Les rapport de "+user.getUsername()+" "+user.getPrenom(),"Bonjour , voici votre rapports",dataSources);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+
 }

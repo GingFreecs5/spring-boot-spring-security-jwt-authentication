@@ -33,6 +33,8 @@ public interface FileStorageService {
 	 Enveloppe getEnveloppe(Long id) throws EnveloppeNotFoundException;
 	 List<Enveloppe> getAllEnveloppes(Long id) throws UserNotFoundException;
 	 List<Enveloppe> getEnveloppesByStatus(Long id,String status) throws UserNotFoundException;
+
+
 	 void deleteEnveloppe(Long envId) ;
 
 

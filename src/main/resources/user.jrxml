@@ -1,92 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.19.1.final using JasperReports Library version 6.19.1-867c00bf88cd4d784d404379d6c05e1b419e8a4c  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4" pageWidth="595" pageHeight="700" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e233bdb1-e865-4f7a-9664-87cc44ded3c3">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4" pageWidth="800" pageHeight="1000" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e233bdb1-e865-4f7a-9664-87cc44ded3c3">
     <field name="username" class="java.lang.String"/>
     <field name="prenom" class="java.lang.String"/>
     <field name="email" class="java.lang.String"/>
     <field name="numTelephone" class="java.lang.String"/>
     <field name="pieceJusticatif" class="java.lang.String"/>
+    <group name="Group1">
+        <groupHeader>
+            <band height="128">
+                <image>
+                    <reportElement x="590" y="10" width="119" height="85" uuid="f74c7b17-5587-45cf-bb04-0072123d5307"/>
+                    <imageExpression><![CDATA["eaiLogo.png"]]></imageExpression>
+                </image>
+                <textField evaluationTime="Column">
+                    <reportElement mode="Opaque" x="30" y="40" width="220" height="30" forecolor="#000000" uuid="59240107-4ca8-4ace-a477-e96eb9ef4931"/>
+                    <textElement textAlignment="Left" verticalAlignment="Middle">
+                        <font size="19" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["Eurafric Information"]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="30" y="10" width="220" height="30" uuid="1a52e0b3-f09c-4a1e-96ef-1afd28ea8b83"/>
+                    <textElement verticalAlignment="Middle">
+                        <font size="19"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["BANK OF AFRICA"]]></textFieldExpression>
+                </textField>
+                <textField>
+                    <reportElement x="30" y="70" width="460" height="30" uuid="b99c5986-ff75-4a2a-b0f9-c093f42d0f14"/>
+                    <textElement verticalAlignment="Middle">
+                        <font size="19"/>
+                    </textElement>
+                    <textFieldExpression><![CDATA["F9QP+RC4, Bouskoura, Casablanca-Settat, Maroc"]]></textFieldExpression>
+                </textField>
+                <line>
+                    <reportElement x="30" y="110" width="650" height="1" forecolor="#4A4646" uuid="78d34d05-51f7-4950-b6be-f341396dec3e"/>
+                </line>
+            </band>
+        </groupHeader>
+    </group>
     <background>
         <band splitType="Stretch"/>
     </background>
-    <title>
-        <band height="81" splitType="Stretch">
-            <image>
-                <reportElement x="0" y="5" width="93" height="71" uuid="261ddfcf-1d5d-4fc2-8ea7-20c61329f005"/>
-                <imageExpression><![CDATA["eaiLogo.png"]]></imageExpression>
-            </image>
-            <textField>
-                <reportElement x="170" y="40" width="241" height="41" forecolor="#3538F0" uuid="b4903673-7d9a-4b4e-8c5f-1e37c93cbaca"/>
-                <textElement textAlignment="Center" verticalAlignment="Middle">
-                    <font size="19" isBold="true"/>
-                </textElement>
-                <textFieldExpression><![CDATA["Informations Personnels"]]></textFieldExpression>
-            </textField>
-            <textField pattern="MMMMM dd, yyyy">
-                <reportElement x="380" y="0" width="100" height="30" forecolor="#82817D" uuid="bef6ce8a-f08d-478b-947f-578635fe76d4"/>
-                <textElement textAlignment="Center" verticalAlignment="Middle"/>
-                <textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-            </textField>
-            <textField>
-                <reportElement x="440" y="30" width="120" height="30" forecolor="#82817D" uuid="a3388987-6e92-491b-b37b-5fa6ab5b72ac"/>
-                <textFieldExpression><![CDATA["Eurafric Information, Bouskoura, La Villle verte"]]></textFieldExpression>
-            </textField>
-        </band>
-    </title>
     <detail>
-        <band height="268" splitType="Stretch">
+        <band height="309" splitType="Stretch">
             <rectangle>
-                <reportElement x="90" y="210" width="389" height="48" uuid="f6ca3fc6-3522-4a1e-b0d1-e48f792f26f7"/>
+                <reportElement x="140" y="259" width="389" height="48" uuid="f6ca3fc6-3522-4a1e-b0d1-e48f792f26f7"/>
             </rectangle>
             <rectangle>
-                <reportElement x="90" y="163" width="389" height="48" uuid="8ef9c118-cc7d-48d3-8618-d28245ebeeac"/>
+                <reportElement x="140" y="212" width="389" height="48" uuid="8ef9c118-cc7d-48d3-8618-d28245ebeeac"/>
             </rectangle>
             <rectangle>
-                <reportElement x="90" y="116" width="389" height="48" uuid="a051a1a3-bac5-4da1-928b-a7608390f085"/>
+                <reportElement x="140" y="165" width="389" height="48" uuid="a051a1a3-bac5-4da1-928b-a7608390f085"/>
             </rectangle>
             <rectangle>
-                <reportElement x="90" y="68" width="389" height="48" uuid="81ec7343-a635-4360-8c2e-0260255cf8a0"/>
+                <reportElement x="140" y="117" width="389" height="48" uuid="81ec7343-a635-4360-8c2e-0260255cf8a0"/>
             </rectangle>
             <rectangle>
-                <reportElement x="90" y="20" width="389" height="48" uuid="f708b1f0-0394-40c0-800d-934ad00368b3"/>
+                <reportElement x="140" y="69" width="389" height="48" uuid="f708b1f0-0394-40c0-800d-934ad00368b3"/>
             </rectangle>
             <textField>
-                <reportElement x="100" y="29" width="180" height="30" uuid="3c90c829-568f-4e06-9b2f-24663da6b032"/>
+                <reportElement x="150" y="78" width="180" height="30" uuid="3c90c829-568f-4e06-9b2f-24663da6b032"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
                     <font size="14" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Nom "]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="100" y="79" width="180" height="30" uuid="5b66aa7b-88b4-4a90-803e-854d0117d432"/>
+                <reportElement x="150" y="128" width="180" height="30" uuid="5b66aa7b-88b4-4a90-803e-854d0117d432"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
                     <font size="14" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Prénom "]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="100" y="126" width="180" height="30" uuid="aa4758d5-6769-4d1b-a6b1-3031027419de"/>
+                <reportElement x="150" y="175" width="180" height="30" uuid="aa4758d5-6769-4d1b-a6b1-3031027419de"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
                     <font size="14" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Email "]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="100" y="169" width="180" height="30" uuid="0f005b95-a312-44b8-8af0-258e96185b84"/>
+                <reportElement x="150" y="218" width="180" height="30" uuid="0f005b95-a312-44b8-8af0-258e96185b84"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
                     <font size="14" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Numéro de téléphone "]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="100" y="219" width="180" height="30" uuid="ec631ff2-d2a9-4442-b6cb-f0ad6ccd5be4"/>
+                <reportElement x="150" y="268" width="180" height="30" uuid="ec631ff2-d2a9-4442-b6cb-f0ad6ccd5be4"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
                     <font size="14" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Piéce justicatif "]]></textFieldExpression>
             </textField>
             <textField textAdjust="StretchHeight">
-                <reportElement x="230" y="29" width="300" height="25" uuid="6178cd56-c635-493c-9ac8-a946fcbe94e2">
+                <reportElement x="280" y="78" width="300" height="25" uuid="6178cd56-c635-493c-9ac8-a946fcbe94e2">
                     <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4127881c-d288-4a9c-b848-83d24a6c300a"/>
                 </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -95,7 +105,7 @@
                 <textFieldExpression><![CDATA[$F{username}]]></textFieldExpression>
             </textField>
             <textField textAdjust="StretchHeight">
-                <reportElement x="230" y="82" width="300" height="25" uuid="3d577899-55ab-46a2-80f2-f7d04c5e1b95">
+                <reportElement x="280" y="131" width="300" height="25" uuid="3d577899-55ab-46a2-80f2-f7d04c5e1b95">
                     <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4127881c-d288-4a9c-b848-83d24a6c300a"/>
                 </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -104,7 +114,7 @@
                 <textFieldExpression><![CDATA[$F{prenom}]]></textFieldExpression>
             </textField>
             <textField textAdjust="StretchHeight">
-                <reportElement x="230" y="130" width="300" height="25" uuid="6928f70b-7251-4d83-ad6f-56bdac643d36">
+                <reportElement x="280" y="179" width="300" height="25" uuid="6928f70b-7251-4d83-ad6f-56bdac643d36">
                     <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4127881c-d288-4a9c-b848-83d24a6c300a"/>
                 </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -113,7 +123,7 @@
                 <textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
             </textField>
             <textField textAdjust="StretchHeight">
-                <reportElement x="230" y="172" width="300" height="25" uuid="52d40e80-82cf-44fa-9901-9e9b0bfd2b78">
+                <reportElement x="280" y="221" width="300" height="25" uuid="52d40e80-82cf-44fa-9901-9e9b0bfd2b78">
                     <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4127881c-d288-4a9c-b848-83d24a6c300a"/>
                 </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -122,7 +132,7 @@
                 <textFieldExpression><![CDATA[$F{numTelephone}]]></textFieldExpression>
             </textField>
             <textField textAdjust="StretchHeight">
-                <reportElement x="230" y="222" width="300" height="25" uuid="af62c85a-13cc-4606-834d-b28a330a3b7d">
+                <reportElement x="280" y="271" width="300" height="25" uuid="af62c85a-13cc-4606-834d-b28a330a3b7d">
                     <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4127881c-d288-4a9c-b848-83d24a6c300a"/>
                 </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -131,8 +141,16 @@
                 <textFieldExpression><![CDATA[$F{pieceJusticatif}]]></textFieldExpression>
             </textField>
             <line>
-                <reportElement x="280" y="20" width="1" height="240" uuid="99832057-f17f-4397-897d-6154f112e941"/>
+                <reportElement x="330" y="69" width="1" height="240" uuid="99832057-f17f-4397-897d-6154f112e941"/>
             </line>
+            <textField>
+                <reportElement mode="Opaque" x="160" y="10" width="339" height="41" forecolor="#1A1A1F" backcolor="#517F91" uuid="b4903673-7d9a-4b4e-8c5f-1e37c93cbaca"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="22" isBold="true" isItalic="false" isUnderline="false"/>
+                    <paragraph lineSpacingSize="1.0"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Informations Personnels"]]></textFieldExpression>
+            </textField>
         </band>
     </detail>
 </jasperReport>
