@@ -304,6 +304,16 @@ public class FileController {
 		fileStorageService.deleteEnveloppe(envId);
 		return ResponseEntity.status(HttpStatus.OK).body(envId);
 	}
+	/************************************
+	 * Delete Enveloppes
+	 ***************************************/
+	@PostMapping("/delete/enveloppes")
+	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+	public ResponseEntity<?> DeleteEnveloppes(@RequestBody Long[] envIds) {
+		fileStorageService.deleteEnveloppes(envIds);
+		return ResponseEntity.status(HttpStatus.OK).body(envIds);
+	}
+
 
 	/************************************
 	 * Get Documents
@@ -374,11 +384,13 @@ public class FileController {
 					enveloppes.add(enveloppe);
 				}
 			}
+		} else {
+			enveloppes=enveloppes_;
 		}
 		if(enveloppes.isEmpty()){
 			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Empty Data");
 		}else{
-			if(request.getType().equals("Enveloppe")) {
+			if(request.getType().equals("Enveloppes")) {
 				JasperPrint response =reportService.exportReportEnveloppes(user.getId(),enveloppes);
 				return new ResponseEntity<byte[]>(JasperExportManager.exportReportToPdf(response),headers,HttpStatus.OK);
 			}else {
@@ -461,6 +473,8 @@ public class FileController {
 							enveloppes.add(enveloppe);
 						}
 					}
+				}else{
+					enveloppes=enveloppes_;
 				}
 
 				if(enveloppes.isEmpty()){

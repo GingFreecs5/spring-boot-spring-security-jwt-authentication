@@ -36,7 +36,7 @@ public interface FileStorageService {
 
 
 	 void deleteEnveloppe(Long envId) ;
-
+	 void deleteEnveloppes(Long[] envIds);
 
 	/*****************************************Documents***********************************/
 

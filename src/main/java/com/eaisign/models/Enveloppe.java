@@ -46,7 +46,7 @@ public class Enveloppe implements Serializable {
 	private String nom;
 	private String status;
 	@OneToMany(mappedBy = "enveloppe",cascade={CascadeType.ALL})
-	@JsonIgnore
+
 	@ToString.Exclude
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private List<Document> documents;

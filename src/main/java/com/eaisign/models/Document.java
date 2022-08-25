@@ -40,6 +40,7 @@ public class Document implements Serializable {
 	private String nom;
 	private String canalUtilise;
 	@ManyToOne
+	@JsonIgnore
 	 @JoinColumn(name = "enveloppe_id", nullable = false)
 	private Enveloppe enveloppe;
 	@OneToOne
