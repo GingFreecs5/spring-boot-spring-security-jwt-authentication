@@ -45,7 +45,7 @@ import javax.mail.util.ByteArrayDataSource;
 
 @Controller
 
-@RequestMapping("/api/files")
+@RequestMapping("/api/v1/files")
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class FileController {
 
