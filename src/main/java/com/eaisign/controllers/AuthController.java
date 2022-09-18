@@ -22,6 +22,7 @@ import com.eaisign.security.jwt.JwtUtils;
 import com.eaisign.security.services.UserDetailsImpl;
 import com.eaisign.services.FileStorageService;
 
+import com.eaisign.services.implementations.UserServiceImp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,7 +53,7 @@ AuthenticationManager authenticationManager;
 
   
   UserRepository userRepository;
-
+  UserServiceImp userServiceImp;
   RoleRepository roleRepository;
 
   PasswordEncoder encoder;
@@ -61,9 +63,10 @@ AuthenticationManager authenticationManager;
   FileStorageService fileStorageService;
   public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
 		RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils,
-		FileStorageService fileStorageService) {
+		FileStorageService fileStorageService,UserServiceImp userServiceImp) {
 	super();
 	this.authenticationManager = authenticationManager;
+    this.userServiceImp=userServiceImp;
 	this.userRepository = userRepository;
 	this.roleRepository = roleRepository;
 	this.encoder = encoder;
@@ -86,10 +89,13 @@ AuthenticationManager authenticationManager;
     }
   }
   @PostMapping("/signin")
-  public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+  public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) throws Exception {
+
+    String passwordEncrypted=loginRequest.getPassword();
+    String passwordDecrypted= userServiceImp.desEncrypt(passwordEncrypted);
 
     Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), passwordDecrypted));
 
     SecurityContextHolder.getContext().setAuthentication(authentication);
     String jwt = jwtUtils.generateJwtToken(authentication);
@@ -158,4 +164,10 @@ AuthenticationManager authenticationManager;
 		return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(msg));
 	}
 
+    @PostMapping("/decrypt/{password}")
+    public ResponseEntity<ResponseMessage> Decrypt(@PathVariable("password") String password) throws Exception {
+      String passwordDec=userServiceImp.desEncrypt(password);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(passwordDec));
+
+    }
 }

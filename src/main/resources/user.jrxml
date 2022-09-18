@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.19.1.final using JasperReports Library version 6.19.1-867c00bf88cd4d784d404379d6c05e1b419e8a4c  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4" pageWidth="800" pageHeight="1000" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="e233bdb1-e865-4f7a-9664-87cc44ded3c3">
+    <parameter name="nbrEnveloppes" class="java.lang.Integer"/>
+    <parameter name="nbrEnveloppesSignés" class="java.lang.Integer"/>
     <field name="username" class="java.lang.String"/>
     <field name="prenom" class="java.lang.String"/>
     <field name="email" class="java.lang.String"/>
@@ -44,59 +46,59 @@
         <band splitType="Stretch"/>
     </background>
     <detail>
-        <band height="309" splitType="Stretch">
+        <band height="411" splitType="Stretch">
             <rectangle>
-                <reportElement x="140" y="259" width="389" height="48" uuid="f6ca3fc6-3522-4a1e-b0d1-e48f792f26f7"/>
+                <reportElement x="79" y="259" width="511" height="48" uuid="f6ca3fc6-3522-4a1e-b0d1-e48f792f26f7"/>
             </rectangle>
             <rectangle>
-                <reportElement x="140" y="212" width="389" height="48" uuid="8ef9c118-cc7d-48d3-8618-d28245ebeeac"/>
+                <reportElement x="79" y="212" width="511" height="48" uuid="8ef9c118-cc7d-48d3-8618-d28245ebeeac"/>
             </rectangle>
             <rectangle>
-                <reportElement x="140" y="165" width="389" height="48" uuid="a051a1a3-bac5-4da1-928b-a7608390f085"/>
+                <reportElement x="79" y="165" width="511" height="48" uuid="a051a1a3-bac5-4da1-928b-a7608390f085"/>
             </rectangle>
             <rectangle>
-                <reportElement x="140" y="117" width="389" height="48" uuid="81ec7343-a635-4360-8c2e-0260255cf8a0"/>
+                <reportElement x="79" y="117" width="511" height="48" uuid="81ec7343-a635-4360-8c2e-0260255cf8a0"/>
             </rectangle>
             <rectangle>
-                <reportElement x="140" y="69" width="389" height="48" uuid="f708b1f0-0394-40c0-800d-934ad00368b3"/>
+                <reportElement x="79" y="69" width="511" height="48" uuid="f708b1f0-0394-40c0-800d-934ad00368b3"/>
             </rectangle>
             <textField>
-                <reportElement x="150" y="78" width="180" height="30" uuid="3c90c829-568f-4e06-9b2f-24663da6b032"/>
+                <reportElement x="110" y="78" width="180" height="30" uuid="3c90c829-568f-4e06-9b2f-24663da6b032"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
                     <font size="14" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Nom "]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="150" y="128" width="180" height="30" uuid="5b66aa7b-88b4-4a90-803e-854d0117d432"/>
+                <reportElement x="110" y="128" width="180" height="30" uuid="5b66aa7b-88b4-4a90-803e-854d0117d432"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
                     <font size="14" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Prénom "]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="150" y="175" width="180" height="30" uuid="aa4758d5-6769-4d1b-a6b1-3031027419de"/>
+                <reportElement x="110" y="175" width="180" height="30" uuid="aa4758d5-6769-4d1b-a6b1-3031027419de"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
                     <font size="14" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Email "]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="150" y="218" width="180" height="30" uuid="0f005b95-a312-44b8-8af0-258e96185b84"/>
+                <reportElement x="110" y="218" width="180" height="30" uuid="0f005b95-a312-44b8-8af0-258e96185b84"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
                     <font size="14" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Numéro de téléphone "]]></textFieldExpression>
             </textField>
             <textField>
-                <reportElement x="150" y="268" width="180" height="30" uuid="ec631ff2-d2a9-4442-b6cb-f0ad6ccd5be4"/>
+                <reportElement x="110" y="268" width="180" height="30" uuid="ec631ff2-d2a9-4442-b6cb-f0ad6ccd5be4"/>
                 <textElement textAlignment="Left" verticalAlignment="Middle">
                     <font size="14" isBold="true"/>
                 </textElement>
                 <textFieldExpression><![CDATA["Piéce justicatif "]]></textFieldExpression>
             </textField>
             <textField textAdjust="StretchHeight">
-                <reportElement x="280" y="78" width="300" height="25" uuid="6178cd56-c635-493c-9ac8-a946fcbe94e2">
+                <reportElement x="320" y="78" width="300" height="25" uuid="6178cd56-c635-493c-9ac8-a946fcbe94e2">
                     <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4127881c-d288-4a9c-b848-83d24a6c300a"/>
                 </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -105,7 +107,7 @@
                 <textFieldExpression><![CDATA[$F{username}]]></textFieldExpression>
             </textField>
             <textField textAdjust="StretchHeight">
-                <reportElement x="280" y="131" width="300" height="25" uuid="3d577899-55ab-46a2-80f2-f7d04c5e1b95">
+                <reportElement x="320" y="131" width="300" height="25" uuid="3d577899-55ab-46a2-80f2-f7d04c5e1b95">
                     <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4127881c-d288-4a9c-b848-83d24a6c300a"/>
                 </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -114,7 +116,7 @@
                 <textFieldExpression><![CDATA[$F{prenom}]]></textFieldExpression>
             </textField>
             <textField textAdjust="StretchHeight">
-                <reportElement x="280" y="179" width="300" height="25" uuid="6928f70b-7251-4d83-ad6f-56bdac643d36">
+                <reportElement x="320" y="179" width="300" height="25" uuid="6928f70b-7251-4d83-ad6f-56bdac643d36">
                     <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4127881c-d288-4a9c-b848-83d24a6c300a"/>
                 </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -123,7 +125,7 @@
                 <textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
             </textField>
             <textField textAdjust="StretchHeight">
-                <reportElement x="280" y="221" width="300" height="25" uuid="52d40e80-82cf-44fa-9901-9e9b0bfd2b78">
+                <reportElement x="320" y="221" width="300" height="25" uuid="52d40e80-82cf-44fa-9901-9e9b0bfd2b78">
                     <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4127881c-d288-4a9c-b848-83d24a6c300a"/>
                 </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -132,7 +134,7 @@
                 <textFieldExpression><![CDATA[$F{numTelephone}]]></textFieldExpression>
             </textField>
             <textField textAdjust="StretchHeight">
-                <reportElement x="280" y="271" width="300" height="25" uuid="af62c85a-13cc-4606-834d-b28a330a3b7d">
+                <reportElement x="320" y="271" width="300" height="25" uuid="af62c85a-13cc-4606-834d-b28a330a3b7d">
                     <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4127881c-d288-4a9c-b848-83d24a6c300a"/>
                 </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -140,9 +142,6 @@
                 </textElement>
                 <textFieldExpression><![CDATA[$F{pieceJusticatif}]]></textFieldExpression>
             </textField>
-            <line>
-                <reportElement x="330" y="69" width="1" height="240" uuid="99832057-f17f-4397-897d-6154f112e941"/>
-            </line>
             <textField>
                 <reportElement mode="Opaque" x="160" y="10" width="339" height="41" forecolor="#1A1A1F" backcolor="#517F91" uuid="b4903673-7d9a-4b4e-8c5f-1e37c93cbaca"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle">
@@ -151,6 +150,57 @@
                 </textElement>
                 <textFieldExpression><![CDATA["Informations Personnels"]]></textFieldExpression>
             </textField>
+            <rectangle>
+                <reportElement x="79" y="307" width="511" height="73" uuid="e12fcb02-d3d1-4bb8-a9e7-8f1077c62c47"/>
+            </rectangle>
+            <textField>
+                <reportElement x="110" y="330" width="180" height="30" uuid="2bcaab17-c406-4e7c-89be-a3a56be90578"/>
+                <textElement textAlignment="Left" verticalAlignment="Middle">
+                    <font size="14" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Nombre des enveloppes"]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="330" y="69" width="1" height="311" uuid="99832057-f17f-4397-897d-6154f112e941"/>
+            </line>
+            <textField textAdjust="StretchHeight">
+                <reportElement x="480" y="310" width="79" height="25" uuid="2a44386d-d069-4147-9e0e-8154851dc4d6">
+                    <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4127881c-d288-4a9c-b848-83d24a6c300a"/>
+                </reportElement>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{nbrEnveloppes}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="360" y="310" width="70" height="25" uuid="5d4974c9-0a07-4cd8-a333-edc6aade004e"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Tous "]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="330" y="340" width="260" height="1" uuid="a8c40f8e-dcce-4cfa-976e-39f91efe8c9e"/>
+            </line>
+            <textField>
+                <reportElement x="360" y="350" width="70" height="25" uuid="81b7c116-9a31-4cc7-a4bd-fc7db8e70406"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Signés "]]></textFieldExpression>
+            </textField>
+            <textField textAdjust="StretchHeight">
+                <reportElement x="480" y="350" width="79" height="25" uuid="111bd0b9-0d9e-4f10-a477-efeb40d509df">
+                    <property name="com.jaspersoft.studio.spreadsheet.connectionID" value="4127881c-d288-4a9c-b848-83d24a6c300a"/>
+                </reportElement>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="14"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{nbrEnveloppesSignés}]]></textFieldExpression>
+            </textField>
+            <line>
+                <reportElement x="460" y="307" width="1" height="71" uuid="0e28dcea-b10f-42c2-a7a8-08bd95e4a8fa"/>
+            </line>
         </band>
     </detail>
 </jasperReport>

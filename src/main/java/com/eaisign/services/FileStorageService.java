@@ -58,7 +58,7 @@ public interface FileStorageService {
 	 String deleteFile(String fileName,String root) throws IOException;
 	 File[] getFilesbyEnvid(String root);
 	 //Signataires
-	 Signataire saveSignataire(String email);
+	 Signataire saveSignataire(String email,String nom,String prenom);
 
 
 }

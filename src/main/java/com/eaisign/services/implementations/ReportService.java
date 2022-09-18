@@ -120,11 +120,17 @@ public class ReportService {
 	public JasperPrint  exportUserReport( Long id) throws FileNotFoundException, JRException {
 		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException());
 		List<User> users = new ArrayList<>();
+		List<Enveloppe> enveloppes=enveloppeRepository.findByUser(user);
+		List<Enveloppe> enveloppesSignés=enveloppeRepository.findByStatusAndUser("Terminé",user);
+		int nbrEnveloppes=enveloppes.size();
+		int nbrEnveloppesSignés=enveloppesSignés.size();
 		users.add(user);
 		File fileUser = ResourceUtils.getFile("classpath:user.jrxml");
 		JasperReport jasperReportUser = JasperCompileManager.compileReport(fileUser.getAbsolutePath());
 		JRBeanCollectionDataSource dataSourceUser = new JRBeanCollectionDataSource(users);
 		Map<String, Object> parameters = new HashMap<>();
+		parameters.put("nbrEnveloppes",nbrEnveloppes);
+		parameters.put("nbrEnveloppesSignés",nbrEnveloppesSignés);
 		JasperPrint jasperPrintUser = JasperFillManager.fillReport(jasperReportUser, parameters, dataSourceUser);
 		return  jasperPrintUser;
 	}

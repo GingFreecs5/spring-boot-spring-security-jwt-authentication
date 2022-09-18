@@ -40,7 +40,9 @@ public class Signataire {
 	@ToString.Exclude
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Document document;
-	public Signataire(String email){
+	public Signataire(String email,String nom,String prenom){
 		this.email=email;
+		this.prenom=prenom;
+		this.nom=nom;
 	}
 }

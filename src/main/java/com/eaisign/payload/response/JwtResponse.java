@@ -12,6 +12,7 @@ public class JwtResponse {
   private String num_telephone;
   private String piece_justicatif;
   private List<String> roles;
+  private String refreshToken;
 
   public JwtResponse(String accessToken, Long id, String nom,String prenom, String email,String num_telephone,String piece_justicatif, List<String> roles) {
     this.token = accessToken;

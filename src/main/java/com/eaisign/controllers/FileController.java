@@ -204,8 +204,7 @@ public class FileController {
 
 		String message = "Files saved";
 		Enveloppe enveloppe = fileStorageService.getEnveloppe(request.getIdEnveloppe());
-		Signataire signataire = fileStorageService.saveSignataire(request.getEmail());
-		List<Signataire> signataires=new ArrayList<>();
+		Signataire signataire = fileStorageService.saveSignataire(request.getSignataireEmail(),request.getSignataireNom(), request.getSignatairePrenom());
 		for (String file : request.getFiles()) {
 			Document document = fileStorageService.saveDocument(file, enveloppe, request.getCanalUtilise(), signataire);
 			if(request.isCopyFiles()) {
@@ -501,7 +500,7 @@ public class FileController {
 				return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body("Error dans le serveur");
 			}
 		}
-		String response=reportService.sendReportstoEmail(email,"EaiSign - Les rapport de "+user.getUsername()+" "+user.getPrenom(),"Bonjour , voici votre rapports",dataSources);
+		String response=reportService.sendReportstoEmail(email,"EaiSign - Les rapport de "+user.getUsername()+" "+user.getPrenom(),"Bonjour voici vos rapports",dataSources);
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
