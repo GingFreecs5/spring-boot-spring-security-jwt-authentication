@@ -56,7 +56,7 @@ public interface FileStorageService {
 	 String uploadFile(MultipartFile file,String root );
 	 boolean copyFile(String sourcePath,String targetPath);
 	 String deleteFile(String fileName,String root) throws IOException;
-	 File[] getFilesbyEnvid(String root);
+	 File[] getFilesbyEnvid(String root) ;
 	 //Signataires
 	 Signataire saveSignataire(String email,String nom,String prenom);
 

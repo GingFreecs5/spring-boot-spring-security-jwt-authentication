@@ -43,9 +43,8 @@ public class Document implements Serializable {
 	@JsonIgnore
 	 @JoinColumn(name = "enveloppe_id", nullable = false)
 	private Enveloppe enveloppe;
-	@OneToOne
+	@OneToOne(targetEntity= Signataire.class)
 	@JoinColumn(name="signataire_id")
-	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Signataire signataire;
 
 

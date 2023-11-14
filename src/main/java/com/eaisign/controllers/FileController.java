@@ -4,10 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.nio.file.Files;
+import java.util.*;
 
 import com.eaisign.payload.request.*;
 import com.eaisign.repository.DocumentRepository;
@@ -70,8 +68,12 @@ public class FileController {
 		this.userServiceImp = userServiceImp;
 		this.reportService=reportService;
 	}
-	
 
+	public  String Base64EncodePdf(File file) throws IOException {
+		byte[] bytes= Files.readAllBytes(file.toPath());
+		String b64 = Base64.getEncoder().encodeToString(bytes);
+		return b64;
+	}
 
 	/***************************************
 	 * Upload File
@@ -97,11 +99,12 @@ public class FileController {
 	 ***************************************/
 	@PostMapping("/files/{envId}")
 	@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-	public ResponseEntity<List<FilesbyEnveloppeIdResponse>> getFilesbyEnveloppeId(@PathVariable("envId") Long envId) {
+	public ResponseEntity<List<FilesbyEnveloppeIdResponse>> getFilesbyEnveloppeId(@PathVariable("envId") Long envId) throws IOException {
 		List<FilesbyEnveloppeIdResponse> filesbyEnveloppeIdResponses = new ArrayList<FilesbyEnveloppeIdResponse>();
 		UserDetailsImpl user = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		String path = ROOT + user.getId() + "/" +ENVROOT+ envId;
-		System.out.println(path);
+
+
 		File[] files = fileStorageService.getFilesbyEnvid(path);
 		if (files == null) {
 
@@ -109,7 +112,8 @@ public class FileController {
 
 		} else {
 			for (File file : files) {
-				filesbyEnveloppeIdResponses.add(new FilesbyEnveloppeIdResponse(file.getName(), false));
+				String b64=Base64EncodePdf(file);
+				filesbyEnveloppeIdResponses.add(new FilesbyEnveloppeIdResponse(file.getName(),false,b64));
 			}
 			return ResponseEntity.status(HttpStatus.OK).body(filesbyEnveloppeIdResponses);
 		}

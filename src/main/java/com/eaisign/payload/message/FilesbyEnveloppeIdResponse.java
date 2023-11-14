@@ -9,4 +9,5 @@ public class FilesbyEnveloppeIdResponse {
 	
 		private String name;
 		private boolean isUploading;
+		private String b64;
 }
